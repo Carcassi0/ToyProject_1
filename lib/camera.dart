@@ -35,7 +35,7 @@ class DisplayPictureScreen extends StatelessWidget {
             onPressed: () async {
               final imageUrl = await uploadImageToFirebaseStorage(imagePath);
 
-              saveImageUrlToFirestore(imageUrl);
+              saveImageUrlToFirestore(imageUrl, imagePath);
 
               Navigator.pop(context, imageUrl);
 
@@ -64,9 +64,11 @@ class DisplayPictureScreen extends StatelessWidget {
     return downloadUrl;
   }
 
-  void saveImageUrlToFirestore(String imageUrl) {
+  void saveImageUrlToFirestore(String imageUrl, String imagePath) {
+    final fileName = p.withoutExtension(p.basename(imagePath));
     // Firebase Firestore에 이미지 URL을 저장합니다.
     FirebaseFirestore.instance.collection('images').add({
+      'storeName' : fileName,
       'imageUrl': imageUrl,
       // 다른 필드에 대한 추가 정보를 저장할 수 있습니다.
     });

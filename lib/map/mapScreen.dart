@@ -1,30 +1,18 @@
-import 'dart:io';
 import 'dart:async';
-import 'package:doitflutter/user/loginPage.dart';
-import 'package:doitflutter/settingPage.dart';
 import 'package:path_provider/path_provider.dart';
-import '../settingPage.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:csv/csv.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import 'dart:convert';
 import 'dart:math' show asin, cos, pi, pow, sin, sqrt;
-import 'package:cp949_dart/cp949_dart.dart' as cp949;
-import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'imageUpload.dart';
 import 'package:image_picker/image_picker.dart';
 import 'googleMaps.dart';
 import 'package:camera/camera.dart';
 import 'package:doitflutter/camera.dart';
 import 'package:path/path.dart' show join;
-import 'package:image_picker/image_picker.dart';
 
 class MyMapScreen extends StatefulWidget {
   const MyMapScreen({Key? key});
