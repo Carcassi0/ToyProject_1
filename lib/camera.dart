@@ -1,6 +1,6 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:path/path.dart' show join;
+import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'dart:async';
@@ -51,11 +51,12 @@ class DisplayPictureScreen extends StatelessWidget {
     final compressedImage = await FlutterImageCompress.compressAndGetFile(
       imagePath,
       imagePath.replaceFirst('.png', '_compressed.jpg'),  // 파일 이름을 .jpg로 변경합니다.
-      quality: 20,  // 품질을 50%로 설정합니다.
+      quality: 20,  // 품질을 20%로 설정합니다.
     );
 
     // Firebase Storage에 압축된 이미지를 업로드합니다.
-    final ref = firebase_storage.FirebaseStorage.instance.ref().child('images/${DateTime.now()}.jpg');  // 파일 이름을 .jpg로 변경합니다.
+    final fileName = p.basename(compressedImage!.path);  // 파일 이름을 가져옵니다.
+    final ref = firebase_storage.FirebaseStorage.instance.ref().child('images/$fileName');    // 파일 이름을 .jpg로 변경합니다.
     final uploadTask = ref.putFile(File(compressedImage!.path));
     final snapshot = await uploadTask;
     final downloadUrl = await snapshot.ref.getDownloadURL();
@@ -125,7 +126,7 @@ class _CameraPreviewScreenState extends State<CameraPreviewScreen> {
           try {
             await _initializeControllerFuture;
 
-            final path = join(
+            final path = p.join(
               (await getTemporaryDirectory()).path,
               '${DateTime.now()}.png',
             );

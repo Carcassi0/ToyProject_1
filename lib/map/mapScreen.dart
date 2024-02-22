@@ -165,7 +165,7 @@ class _MyMapScreenState extends State<MyMapScreen> {
                                 title: Text(storeInfo.name),
                                 subtitle: Text('폐업일자: ${storeInfo.closingDate}\n${storeInfo.description}'),
                                 trailing: GestureDetector(
-                                  child: const Icon(Icons.image, size: 35),
+                                  child: const Icon(Icons.receipt_rounded, size: 35),
                                   onTap: () {
                                     showDialog(
                                       context: context,
@@ -232,7 +232,10 @@ class _MyMapScreenState extends State<MyMapScreen> {
                                                             onTap: () async {
                                                               final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
                                                               if (image == null) return;
-                                                              final temporaryPath = join((await getTemporaryDirectory()).path, '${DateTime.now()}.png');
+
+                                                              final now = DateTime.now();
+                                                              final formattedDate = '${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}';
+                                                              final temporaryPath = join((await getTemporaryDirectory()).path, '${storeInfo.name}_$formattedDate.png');
 
                                                               Navigator.pop(context);
 
@@ -268,7 +271,9 @@ class _MyMapScreenState extends State<MyMapScreen> {
                                                             onTap: () async {
                                                               XFile? image = await _picker.pickImage(source: ImageSource.camera);
                                                               if (image == null) return;
-                                                              final temporaryPath = join((await getTemporaryDirectory()).path, '${DateTime.now()}.png');
+                                                              final now = DateTime.now();
+                                                              final formattedDate = '${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}';
+                                                              final temporaryPath = join((await getTemporaryDirectory()).path, '${storeInfo.name}_$formattedDate.png');
                                                               Navigator.pop(context);
 
                                                               final selectedImage = image;
@@ -319,21 +324,6 @@ class _MyMapScreenState extends State<MyMapScreen> {
     super.dispose();
   }
 
-  Future<void> _uploadImageToFirebaseStorage(String imagePath) async {
-    try {
-      final ref = firebase_storage.FirebaseStorage.instance.ref().child('images/${DateTime.now()}.png');
-      final uploadTask = ref.putFile(File(imagePath));
-      await uploadTask.whenComplete(() => null);
-      final downloadUrl = await ref.getDownloadURL();
-
-      // Firestore에 이미지 URL을 저장합니다.
-      await FirebaseFirestore.instance.collection('images').add({
-        'imageUrl': downloadUrl,
-      });
-    } catch (e) {
-      print('Error uploading image to Firebase: $e');
-    }
-  }
   // 이미지를 리스트에 어떻게 대응시킬건지 생각필요.
   Future<String?> getImageUrlForStore(StoreInfo storeInfo) async {
     try {
