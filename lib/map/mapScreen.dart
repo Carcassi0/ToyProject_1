@@ -169,37 +169,31 @@ class _MyMapScreenState extends State<MyMapScreen> {
                                               content: SingleChildScrollView(
                                                 child: ListBody(
                                                   children: <Widget>[
-                                                    FutureBuilder<DocumentSnapshot>(
-                                                      future: FirebaseFirestore.instance.collection('storeInfo').doc(docId).get(),
-                                                      builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-                                                        if (snapshot.hasError) {
-                                                          return Image.asset('assets/non.png');
-                                                        }
 
+                                                    FutureBuilder<QuerySnapshot>(
+                                                      future: FirebaseFirestore.instance.collection('images').where('storeName', isGreaterThanOrEqualTo: '${storeInfo.name}_').where('storeName', isLessThan: '${storeInfo.name}_\uf8ff').get(),
+                                                      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                                                        if (snapshot.hasError) {
+                                                          return Image.asset('assets/non.png'); // 에러 발생 시 아무것도 반환하지 않습니다.
+                                                        }
                                                         if (snapshot.connectionState == ConnectionState.done) {
-                                                          Map<String, dynamic> data = snapshot.data!.data() as Map<String, dynamic>;
-                                                          String imageUrl = data['photo'] ?? '';
-                                                          if (imageUrl.isEmpty) {
-                                                            return Container(
-                                                              decoration: BoxDecoration(
-                                                                color: Colors.grey[200],
-                                                                border: Border.all(color: Colors.white),
-                                                                borderRadius: BorderRadius.circular(20),
-                                                              ),
-                                                              child: Padding(
-                                                                padding: const EdgeInsets.all(8.0),
-                                                                child: Image.asset('assets/non.png'),
-                                                              ),
-                                                            );
-                                                          } else {
-                                                            return Image.network(imageUrl);
+                                                          if (snapshot.data == null || snapshot.data!.docs.isEmpty) {
+                                                            return Image.asset('assets/non.png'); // 데이터 없을 때 아무것도 반환하지 않습니다.
+                                                          }
+                                                          // 여기에서는 storeName이 storeInfo.name과 일치하는 문서를 찾아서 그 중 첫 번째 문서를 가져옵니다.
+                                                          // 날짜 부분을 제외하고 가져오기 때문에 동일한 상점 이름을 가진 여러 문서 중에서도 상관없이 가져올 수 있습니다.
+                                                          final imageUrl = snapshot.data!.docs.first.get('imageUrl') as String?;
+                                                          if (imageUrl != null && imageUrl.isNotEmpty) {
+                                                            return Image.network(imageUrl); // 이미지를 보여줍니다.
                                                           }
                                                         }
-
-                                                        return const CircularProgressIndicator();
+                                                        return Image.asset('assets/non.png'); // 그 외의 경우 아무것도 반환하지 않습니다.
                                                       },
                                                     ),
-                                                    const SizedBox(height: 30,),
+
+
+
+                                                    const SizedBox(height: 30),
                                                     Row(
                                                       mainAxisAlignment: MainAxisAlignment.center,
                                                       children: [

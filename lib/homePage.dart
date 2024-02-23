@@ -33,9 +33,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    List<String> menu = ['지도', '업무관리', '사진 등록', '기타'];
+    List<String> menu = ['지도', '업무관리', '알림', '기타'];
     List<IconData> menuIcon = [
-      Icons.map, Icons.list, Icons.cloud_upload, Icons.my_library_books
+      Icons.map, Icons.list, Icons.notifications, Icons.my_library_books
     ];
 
     final user = FirebaseAuth.instance.currentUser!;
@@ -125,27 +125,37 @@ class _MyHomePageState extends State<MyHomePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: const EdgeInsets.only(top: 55, left: 20, right: 1),
+                padding: const EdgeInsets.only(top: 55, left: 10, right: 20),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    InkWell(
-                      onTap: () => _scaffoldKey.currentState?.openDrawer(),
-                      child: const Icon(
-                        Icons.menu,
-                        color: Colors.black,
-                        size: 35,
+                    Expanded(
+                      child: InkWell(
+                        onTap: () => _scaffoldKey.currentState?.openDrawer(),
+                        child: const Icon(
+                          Icons.menu,
+                          color: Colors.black,
+                          size: 45,
+                        ),
                       ),
                     ),
-                    MaterialButton(
-                      onPressed: () {
-                        FirebaseAuth.instance.signOut();
-                      },
-                      child: const Icon(Icons.output, size: 35),
-                    )
+                    const SizedBox(width: 300), // 아이콘 사이에 공간을 두기 위한 SizedBox 추가
+                    Expanded(
+                      child: InkWell(
+                        onTap: () {
+                          FirebaseAuth.instance.signOut();
+                        },
+                        child: const Icon(
+                          Icons.output,
+                          color: Colors.black,
+                          size: 45,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
+
               Padding(
                 padding: const EdgeInsets.only(top: 75, left: 20, right: 15),
                 child: Column(
@@ -232,65 +242,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                 context, MaterialPageRoute(builder: (context) => const csvPage()));
                           }
                           if (index == 2) {
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: const Text('사진 등록'),
-                                  content: SingleChildScrollView(
-                                    child: ListBody(
-                                      children: <Widget>[
-                                        GestureDetector(
-                                          child: const Text("갤러리에서 사진 선택"),
-                                          onTap: () async {
-                                            XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-                                            if(image == null) return;
-                                            final temporaryPath = join(
-                                                (await getTemporaryDirectory()).path,
-                                              '${DateTime.now()}.png',
-                                            );
-                                            Navigator.pop(context);
-
-                                            final selectedImage = image;
-                                            await selectedImage?.saveTo(temporaryPath);
-
-                                            final uploadedImagePath = await Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) => DisplayPictureScreen(imagePath: temporaryPath),
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                        const Padding(padding: EdgeInsets.all(8.0)),
-                                        GestureDetector(
-                                          child: const Text("카메라로 사진 찍기"),
-                                          onTap: () async {
-                                            XFile? image = await _picker.pickImage(source: ImageSource.camera);
-                                            if(image == null) return;
-                                            final temporaryPath = join(
-                                              (await getTemporaryDirectory()).path,
-                                              '${DateTime.now()}.png',
-                                            );
-                                            Navigator.pop(context);
-
-                                            final selectedImage = image;
-                                            await selectedImage?.saveTo(temporaryPath);
-
-                                            final uploadedImagePath = await Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) => DisplayPictureScreen(imagePath: temporaryPath),
-                                              ),
-                                            );
-                                          },
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              },
-                            );
+                            Navigator.push(
+                                context, MaterialPageRoute(builder: (context) => const csvPage()));
                           }
                           if (index == 3) {
                             Navigator.push(

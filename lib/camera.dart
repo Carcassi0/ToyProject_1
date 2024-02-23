@@ -1,4 +1,5 @@
 import 'package:camera/camera.dart';
+import 'package:doitflutter/map/mapScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
@@ -22,7 +23,7 @@ class DisplayPictureScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('이미지 업로드'),
+        title: Text('이미지 업로드', style: TextStyle(fontWeight: FontWeight.bold),),
         leading: IconButton(
           icon: Icon(Icons.close),
           onPressed: () {
@@ -43,7 +44,13 @@ class DisplayPictureScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: Image.file(File(imagePath)),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Image.file(File(imagePath)),
+        ],
+      ),
     );
   }
   Future<String> uploadImageToFirebaseStorage(String imagePath) async {
@@ -149,6 +156,15 @@ class _CameraPreviewScreenState extends State<CameraPreviewScreen> {
             // 이미지가 업로드된 경로가 반환되면 Firebase Firestore에 저장.
             if (uploadedImagePath != null) {
               await _uploadImageToFirebaseStorage(uploadedImagePath);
+              AlertDialog(
+                title: Text('이미지가 업로드 되었습니다'),
+                content: GestureDetector(
+                  child: Text('닫기'),
+                  onTap: (){Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => const MyMapScreen()));
+                  }
+                ),
+              );
             }
           } catch (e) {
             print(e);
@@ -176,6 +192,7 @@ class _CameraPreviewScreenState extends State<CameraPreviewScreen> {
       await FirebaseFirestore.instance.collection('images').add({
         'imageUrl': downloadUrl,
       });
+
     } catch (e) {
       print('Error uploading image to Firebase: $e');
     }
