@@ -45,10 +45,7 @@ class _loginPageState extends State<loginPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('Hello Again!',
-            style: GoogleFonts.bebasNeue(
-              fontSize: 60
-            )),
+            Icon(Icons.lock_outline_rounded, size: 150,),
             SizedBox(height: 80),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 25.0),
@@ -103,7 +100,7 @@ class _loginPageState extends State<loginPage> {
                 children: [
                   GestureDetector(
 
-                    child: Text('Forgot Password?', style: TextStyle(
+                    child: Text('비밀번호를 잊으셨나요?', style: TextStyle(
                         color: Colors.blue, fontWeight: FontWeight.bold)),
                     onTap: (){
                       Navigator.push(context, MaterialPageRoute(builder: (context){
@@ -126,7 +123,7 @@ class _loginPageState extends State<loginPage> {
                   decoration: BoxDecoration(color: Colors.black,
                   borderRadius: BorderRadius.circular(20)),
                   child: Center(
-                    child: Text('Sign In',
+                    child: Text('로 그 인',
                     style: TextStyle(color: Colors.white,
                     fontWeight: FontWeight.bold,
                     fontSize: 18)
@@ -140,10 +137,10 @@ class _loginPageState extends State<loginPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text('Not a member?', style: TextStyle(fontWeight: FontWeight.bold)),
+                Text('회원이 아니신가요?', style: TextStyle(fontWeight: FontWeight.bold)),
                 GestureDetector(
                   onTap: widget.showRegisterPage,
-                    child: Text(' Register now', style:
+                    child: Text(' 가입하기', style:
                     TextStyle(color: Colors.blue, fontWeight: FontWeight.bold)))
               ],
             )

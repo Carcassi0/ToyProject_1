@@ -8,7 +8,7 @@ import 'dart:async';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
-
+import 'package:google_fonts/google_fonts.dart';
 
 
 
@@ -23,7 +23,7 @@ class DisplayPictureScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('이미지 업로드', style: TextStyle(fontWeight: FontWeight.bold),),
+        title: Text('이미지 업로드', style: GoogleFonts.bebasNeue(fontWeight: FontWeight.bold)),
         leading: IconButton(
           icon: Icon(Icons.close),
           onPressed: () {

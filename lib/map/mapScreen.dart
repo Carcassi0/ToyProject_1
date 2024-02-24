@@ -114,183 +114,187 @@ class _MyMapScreenState extends State<MyMapScreen> {
                   color: const Color.fromRGBO(255, 190, 152, 1),
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: FutureBuilder<List<List<dynamic>>>(
-                  future: readCoordinatesFromCSV("assets/baseData.csv"), // 여기에 파일 경로 입력
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
-                    } else if (snapshot.hasError) {
-                      return Center(child: Text('Error: ${snapshot.error}'));
-                    } else {
-                      final coordinates = snapshot.data!;
-                      return ListView.builder(
-                        controller: scrollController,
-                        itemCount: storeInfos.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          final storeInfo = storeInfos[index];
-                          final markerPosition = LatLng(storeInfo.latitude, storeInfo.longitude);
-                          final distance = haversineDistance(_center, markerPosition);
-
-                          if(distance <= 1000) {
-                            return Card(
-                              child: ListTile(
-                                onTap: () async {
-                                  // 선택된 상점 정보
-                                  // final selectedStoreInfo = storeInfos[index];
-                                  //
-                                  // // 이미지 업로드한 상점의 정보와 관련된 데이터 가져오기 (예: 이미지 URL)
-                                  // // 여기에서는 예시로 이미지 URL을 가져오는 함수를 사용하도록 가정합니다.
-                                  // final imageUrl = await getImageUrlForStore(selectedStoreInfo);
-                                  //
-                                  // // 이미지를 업로드한 상점의 정보와 관련된 데이터를 가지고 화면으로 이동
-                                  // Navigator.push(
-                                  //   context,
-                                  //   MaterialPageRoute(
-                                  //     builder: (context) => ImageDisplayScreen(imageUrl: imageUrl),
-                                  //   ),
-                                  // );
-                                }, // 메모 및 영업 이력 확인할 수 있는 페이지로 이동
-                                title: Text(storeInfo.name),
-                                subtitle: Text('폐업일자: ${storeInfo.closingDate}\n${storeInfo.description}'),
-                                trailing: GestureDetector(
-                                  child: const Icon(Icons.receipt_rounded, size: 35),
-                                  onTap: () {
-                                    showDialog(
-                                      context: context,
-                                      builder: (BuildContext context) {
-                                        return Column(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: [
-                                            AlertDialog(
-                                              title: const Text('사진 등록 이력',
-                                                style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-                                                textAlign: TextAlign.center,
-                                              ),
-                                              content: SingleChildScrollView(
-                                                child: ListBody(
-                                                  children: <Widget>[
-
-                                                    FutureBuilder<QuerySnapshot>(
-                                                      future: FirebaseFirestore.instance.collection('images').where('storeName', isGreaterThanOrEqualTo: '${storeInfo.name}_').where('storeName', isLessThan: '${storeInfo.name}_\uf8ff').get(),
-                                                      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                                                        if (snapshot.hasError) {
-                                                          return Image.asset('assets/non.png'); // 에러 발생 시 아무것도 반환하지 않습니다.
-                                                        }
-                                                        if (snapshot.connectionState == ConnectionState.done) {
-                                                          if (snapshot.data == null || snapshot.data!.docs.isEmpty) {
-                                                            return Image.asset('assets/non.png'); // 데이터 없을 때 아무것도 반환하지 않습니다.
+                child: SafeArea(
+                  top: true,
+                  bottom: false,
+                  child: FutureBuilder<List<List<dynamic>>>(
+                    future: readCoordinatesFromCSV("assets/baseData.csv"), // 여기에 파일 경로 입력
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      } else if (snapshot.hasError) {
+                        return Center(child: Text('Error: ${snapshot.error}'));
+                      } else {
+                        final coordinates = snapshot.data!;
+                        return ListView.builder(
+                          controller: scrollController,
+                          itemCount: storeInfos.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            final storeInfo = storeInfos[index];
+                            final markerPosition = LatLng(storeInfo.latitude, storeInfo.longitude);
+                            final distance = haversineDistance(_center, markerPosition);
+                  
+                            if(distance <= 1000) {
+                              return Card(
+                                child: ListTile(
+                                  onTap: () async {
+                                    // 선택된 상점 정보
+                                    // final selectedStoreInfo = storeInfos[index];
+                                    //
+                                    // // 이미지 업로드한 상점의 정보와 관련된 데이터 가져오기 (예: 이미지 URL)
+                                    // // 여기에서는 예시로 이미지 URL을 가져오는 함수를 사용하도록 가정합니다.
+                                    // final imageUrl = await getImageUrlForStore(selectedStoreInfo);
+                                    //
+                                    // // 이미지를 업로드한 상점의 정보와 관련된 데이터를 가지고 화면으로 이동
+                                    // Navigator.push(
+                                    //   context,
+                                    //   MaterialPageRoute(
+                                    //     builder: (context) => ImageDisplayScreen(imageUrl: imageUrl),
+                                    //   ),
+                                    // );
+                                  }, // 메모 및 영업 이력 확인할 수 있는 페이지로 이동
+                                  title: Text(storeInfo.name),
+                                  subtitle: Text('폐업일자: ${storeInfo.closingDate}\n${storeInfo.description}'),
+                                  trailing: GestureDetector(
+                                    child: const Icon(Icons.receipt_rounded, size: 35),
+                                    onTap: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return Column(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: [
+                                              AlertDialog(
+                                                title: const Text('사진 등록 이력',
+                                                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                                content: SingleChildScrollView(
+                                                  child: ListBody(
+                                                    children: <Widget>[
+                  
+                                                      FutureBuilder<QuerySnapshot>(
+                                                        future: FirebaseFirestore.instance.collection('images').where('storeName', isGreaterThanOrEqualTo: '${storeInfo.name}_').where('storeName', isLessThan: '${storeInfo.name}_\uf8ff').get(),
+                                                        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                                                          if (snapshot.hasError) {
+                                                            return Image.asset('assets/non.png'); // 에러 발생 시 아무것도 반환하지 않습니다.
                                                           }
-                                                          // 여기에서는 storeName이 storeInfo.name과 일치하는 문서를 찾아서 그 중 첫 번째 문서를 가져옵니다.
-                                                          // 날짜 부분을 제외하고 가져오기 때문에 동일한 상점 이름을 가진 여러 문서 중에서도 상관없이 가져올 수 있습니다.
-                                                          final imageUrl = snapshot.data!.docs.first.get('imageUrl') as String?;
-                                                          if (imageUrl != null && imageUrl.isNotEmpty) {
-                                                            return Image.network(imageUrl); // 이미지를 보여줍니다.
+                                                          if (snapshot.connectionState == ConnectionState.done) {
+                                                            if (snapshot.data == null || snapshot.data!.docs.isEmpty) {
+                                                              return Image.asset('assets/non.png'); // 데이터 없을 때 아무것도 반환하지 않습니다.
+                                                            }
+                                                            // 여기에서는 storeName이 storeInfo.name과 일치하는 문서를 찾아서 그 중 첫 번째 문서를 가져옵니다.
+                                                            // 날짜 부분을 제외하고 가져오기 때문에 동일한 상점 이름을 가진 여러 문서 중에서도 상관없이 가져올 수 있습니다.
+                                                            final imageUrl = snapshot.data!.docs.first.get('imageUrl') as String?;
+                                                            if (imageUrl != null && imageUrl.isNotEmpty) {
+                                                              return Image.network(imageUrl); // 이미지를 보여줍니다.
+                                                            }
                                                           }
-                                                        }
-                                                        return Image.asset('assets/non.png'); // 그 외의 경우 아무것도 반환하지 않습니다.
-                                                      },
-                                                    ),
-
-
-
-                                                    const SizedBox(height: 30),
-                                                    Row(
-                                                      mainAxisAlignment: MainAxisAlignment.center,
-                                                      children: [
-                                                        Container(
-                                                          decoration: BoxDecoration(
-                                                            color: Colors.grey[200],
-                                                            border: Border.all(color: Colors.white),
-                                                            borderRadius: BorderRadius.circular(20),
-                                                          ),
-                                                          child: GestureDetector(
-                                                            child: const Padding(
-                                                              padding: EdgeInsets.all(8.0),
-                                                              child: Text(
-                                                                '갤러리에서 등록',
-                                                                style: TextStyle(fontSize: 15),
-                                                              ),
+                                                          return Image.asset('assets/non.png'); // 그 외의 경우 아무것도 반환하지 않습니다.
+                                                        },
+                                                      ),
+                  
+                  
+                  
+                                                      const SizedBox(height: 30),
+                                                      Row(
+                                                        mainAxisAlignment: MainAxisAlignment.center,
+                                                        children: [
+                                                          Container(
+                                                            decoration: BoxDecoration(
+                                                              color: Colors.grey[200],
+                                                              border: Border.all(color: Colors.white),
+                                                              borderRadius: BorderRadius.circular(10),
                                                             ),
-                                                            onTap: () async {
-                                                              final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-                                                              if (image == null) return;
-
-                                                              final now = DateTime.now();
-                                                              final formattedDate = '${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}';
-                                                              final temporaryPath = join((await getTemporaryDirectory()).path, '${storeInfo.name}_$formattedDate.png');
-
-                                                              Navigator.pop(context);
-
-                                                              final selectedImage = image;
-
-                                                              // 이미지를 path에 저장
-                                                              await selectedImage?.saveTo(temporaryPath);
-
-                                                              final uploadedImagePath = await Navigator.push(
-                                                                context,
-                                                                MaterialPageRoute(
-                                                                  builder: (context) => DisplayPictureScreen(imagePath: temporaryPath),
+                                                            child: GestureDetector(
+                                                              child: const Padding(
+                                                                padding: EdgeInsets.all(8.0),
+                                                                child: Text(
+                                                                  '갤러리에서 등록',
+                                                                  style: TextStyle(fontSize: 15),
                                                                 ),
-                                                              );
-                                                            },
-                                                          ),
-                                                        ),
-                                                        const SizedBox(width: 10),
-                                                        Container(
-                                                          decoration: BoxDecoration(
-                                                            color: Colors.grey[200],
-                                                            border: Border.all(color: Colors.white),
-                                                            borderRadius: BorderRadius.circular(20),
-                                                          ),
-                                                          child: GestureDetector(
-                                                            child: const Padding(
-                                                              padding: EdgeInsets.all(8.0),
-                                                              child: Text(
-                                                                '카메라',
-                                                                style: TextStyle(fontSize: 15),
                                                               ),
+                                                              onTap: () async {
+                                                                final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+                                                                if (image == null) return;
+                  
+                                                                final now = DateTime.now();
+                                                                final formattedDate = '${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}';
+                                                                final temporaryPath = join((await getTemporaryDirectory()).path, '${storeInfo.name}_$formattedDate.png');
+                  
+                                                                Navigator.pop(context);
+                  
+                                                                final selectedImage = image;
+                  
+                                                                // 이미지를 path에 저장
+                                                                await selectedImage?.saveTo(temporaryPath);
+                  
+                                                                final uploadedImagePath = await Navigator.push(
+                                                                  context,
+                                                                  MaterialPageRoute(
+                                                                    builder: (context) => DisplayPictureScreen(imagePath: temporaryPath),
+                                                                  ),
+                                                                );
+                                                              },
                                                             ),
-                                                            onTap: () async {
-                                                              XFile? image = await _picker.pickImage(source: ImageSource.camera);
-                                                              if (image == null) return;
-                                                              final now = DateTime.now();
-                                                              final formattedDate = '${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}';
-                                                              final temporaryPath = join((await getTemporaryDirectory()).path, '${storeInfo.name}_$formattedDate.png');
-                                                              Navigator.pop(context);
-
-                                                              final selectedImage = image;
-                                                              await selectedImage?.saveTo(temporaryPath);
-
-                                                              final uploadedImagePath = await Navigator.push(
-                                                                context,
-                                                                MaterialPageRoute(
-                                                                  builder: (context) => DisplayPictureScreen(imagePath: temporaryPath),
-                                                                ),
-                                                              );
-                                                            },
                                                           ),
-                                                        )
-                                                      ],
-                                                    )
-                                                  ],
+                                                          const SizedBox(width: 10),
+                                                          Container(
+                                                            decoration: BoxDecoration(
+                                                              color: Colors.grey[200],
+                                                              border: Border.all(color: Colors.white),
+                                                              borderRadius: BorderRadius.circular(10),
+                                                            ),
+                                                            child: GestureDetector(
+                                                              child: const Padding(
+                                                                padding: EdgeInsets.all(8.0),
+                                                                child: Text(
+                                                                  '카메라',
+                                                                  style: TextStyle(fontSize: 15),
+                                                                ),
+                                                              ),
+                                                              onTap: () async {
+                                                                XFile? image = await _picker.pickImage(source: ImageSource.camera);
+                                                                if (image == null) return;
+                                                                final now = DateTime.now();
+                                                                final formattedDate = '${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}';
+                                                                final temporaryPath = join((await getTemporaryDirectory()).path, '${storeInfo.name}_$formattedDate.png');
+                                                                Navigator.pop(context);
+                  
+                                                                final selectedImage = image;
+                                                                await selectedImage?.saveTo(temporaryPath);
+                  
+                                                                final uploadedImagePath = await Navigator.push(
+                                                                  context,
+                                                                  MaterialPageRoute(
+                                                                    builder: (context) => DisplayPictureScreen(imagePath: temporaryPath),
+                                                                  ),
+                                                                );
+                                                              },
+                                                            ),
+                                                          )
+                                                        ],
+                                                      )
+                                                    ],
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                          ],
-                                        );
-                                      },
-                                    );
-                                  }, // onTap시 화면 중앙에 이미지 출력
+                                            ],
+                                          );
+                                        },
+                                      );
+                                    }, // onTap시 화면 중앙에 이미지 출력
+                                  ),
+                                  // 다른 정보를 표시하려면 여기에 추가
                                 ),
-                                // 다른 정보를 표시하려면 여기에 추가
-                              ),
-                            );
-                          }
-                          return SizedBox.shrink();
-                        },
-                      );
-                    }
-                  },
+                              );
+                            }
+                            return SizedBox.shrink();
+                          },
+                        );
+                      }
+                    },
+                  ),
                 ),
               );
             },

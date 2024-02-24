@@ -60,8 +60,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('Enter Your Email \nfor reset your password', style: GoogleFonts.bebasNeue(
-            fontSize: 40)),
+            Text('비밀번호 초기화를 위해 \n이메일을 입력해주세요', style: GoogleFonts.bebasNeue(
+            fontSize: 30)),
 
             SizedBox(height: 30),
 
@@ -84,11 +84,11 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 ),
               ),
             ),
-            SizedBox(height: 10),
+            SizedBox(height: 20),
 
             MaterialButton(
               onPressed: passwordReset,
-              child: Text('Reset Password',style: TextStyle(color: Colors.white, fontSize: 18),),
+              child: Text('비밀번호 초기화',style: TextStyle(color: Colors.white, fontSize: 18),),
               color: Colors.black,
             )
           ],

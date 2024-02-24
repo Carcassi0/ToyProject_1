@@ -33,7 +33,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    List<String> menu = ['지도', '업무관리', '알림', '기타'];
+    List<String> menu = ['지도', '업무관리', '알림', '요약'];
     List<IconData> menuIcon = [
       Icons.map, Icons.list, Icons.notifications, Icons.my_library_books
     ];
@@ -77,7 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const Icon(Icons.person, size: 100),
+                  const Icon(Icons.person, size: 64),
                   FutureBuilder(
                               future: _getUserName(),
                           builder: (context, snapshot) {
@@ -102,9 +102,10 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             ListTile(
+              leading: Icon(Icons.person),
               title: const Text(
-                '설정',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 23),
+                '마이페이지',
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
               onTap: () {
                 Navigator.push(
@@ -112,7 +113,31 @@ class _MyHomePageState extends State<MyHomePage> {
                   MaterialPageRoute(builder: (context) => const settingPage()),
                 );
               },
-            )
+            ),
+            ListTile(
+              leading: Icon(Icons.settings),
+              title: const Text(
+                '설정',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const settingPage()),
+                );
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.logout),
+              title: const Text(
+                '로그아웃',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              onTap: () {
+                FirebaseAuth.instance.signOut();
+              },
+            ),
+
           ],
         ),
       ),
@@ -126,33 +151,15 @@ class _MyHomePageState extends State<MyHomePage> {
             children: [
               Padding(
                 padding: const EdgeInsets.only(top: 55, left: 10, right: 20),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: InkWell(
-                        onTap: () => _scaffoldKey.currentState?.openDrawer(),
-                        child: const Icon(
-                          Icons.menu,
-                          color: Colors.black,
-                          size: 45,
-                        ),
-                      ),
+                child: Expanded(
+                  child: InkWell(
+                    onTap: () => _scaffoldKey.currentState?.openDrawer(),
+                    child: const Icon(
+                      Icons.menu,
+                      color: Colors.black,
+                      size: 45,
                     ),
-                    const SizedBox(width: 300), // 아이콘 사이에 공간을 두기 위한 SizedBox 추가
-                    Expanded(
-                      child: InkWell(
-                        onTap: () {
-                          FirebaseAuth.instance.signOut();
-                        },
-                        child: const Icon(
-                          Icons.output,
-                          color: Colors.black,
-                          size: 45,
-                        ),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ),
 

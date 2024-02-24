@@ -14,14 +14,14 @@ class settingPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
-        scrollDirection: Axis.vertical,
+        physics: NeverScrollableScrollPhysics(),
         child: SafeArea(
           child: Column(
             children: [
               const SizedBox(height: 70),
-              const Text('Setting', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 50),),
-              const SizedBox(height: 150),
-              Container(height: height*0.7,
+              const Text('설정', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 50),),
+              const SizedBox(height: 70),
+              Container(height: height*0.9,
                 decoration: BoxDecoration(color: const Color.fromRGBO(255, 190, 152, 1),
                 borderRadius: BorderRadius.circular(30)))
 
