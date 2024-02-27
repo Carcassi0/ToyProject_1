@@ -21,9 +21,17 @@ class settingPage extends StatelessWidget {
               const SizedBox(height: 70),
               const Text('설정', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 50),),
               const SizedBox(height: 70),
-              Container(height: height*0.9,
-                decoration: BoxDecoration(color: const Color.fromRGBO(255, 190, 152, 1),
-                borderRadius: BorderRadius.circular(30)))
+              Stack(
+                children:[
+                  Container(height: height*0.9,
+                  decoration: BoxDecoration(color: const Color.fromRGBO(255, 190, 152, 1),
+                  borderRadius: BorderRadius.circular(30))),
+
+                  Container(height: 20, width: 30, decoration:BoxDecoration (color: Colors.black,
+                      borderRadius: BorderRadius.circular(30))
+                  )
+                  ]
+              )
 
             ],
           ),
