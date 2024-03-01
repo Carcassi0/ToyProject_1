@@ -81,18 +81,18 @@ class _RegisterPageState extends State<RegisterPage> {
 
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromRGBO(255, 190, 152, 1),
+      backgroundColor: Theme.of(context).colorScheme.background,
       body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('Hello There!',
+            Text('환영합니다!',
                 style: GoogleFonts.bebasNeue(
-                    fontSize: 52
+                    fontSize: 50
                 )),
             SizedBox(height: 10),
             Text(
-              'Register below with your details',
+              '가입을 위해 모든 정보를 입력하세요',
               style: TextStyle(fontSize: 18),
             ),
 
@@ -114,7 +114,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     controller: _firstnameController,
                     decoration: InputDecoration(
                       border: InputBorder.none,
-                      hintText: 'First Name',
+                      hintText: '이름',
                     ),
                   ),
                 ),
@@ -138,7 +138,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     controller: _lastnameController,
                     decoration: InputDecoration(
                       border: InputBorder.none,
-                      hintText: 'Last Name',
+                      hintText: '성',
                     ),
                   ),
                 ),
@@ -161,7 +161,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     controller: _storecodeController,
                     decoration: InputDecoration(
                       border: InputBorder.none,
-                      hintText: 'Store Code',
+                      hintText: '지점 코드',
                     ),
                   ),
                 ),
@@ -185,7 +185,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     controller: _emailController,
                     decoration: InputDecoration(
                       border: InputBorder.none,
-                      hintText: 'Email',
+                      hintText: '이메일',
                     ),
                   ),
                 ),
@@ -210,7 +210,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     obscureText: true,
                     decoration: InputDecoration(
                       border: InputBorder.none,
-                      hintText: 'Password',
+                      hintText: '비밀번호',
                     ),
                   ),
                 ),
@@ -234,7 +234,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     obscureText: true,
                     decoration: InputDecoration(
                       border: InputBorder.none,
-                      hintText: 'Confirm Password',
+                      hintText: '비밀번호 확인',
                     ),
                   ),
                 ),
@@ -251,7 +251,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   decoration: BoxDecoration(color: Colors.black,
                       borderRadius: BorderRadius.circular(20)),
                   child: Center(
-                      child: Text('Sign Up',
+                      child: Text('회원가입',
                           style: TextStyle(color: Colors.white,
                               fontWeight: FontWeight.bold,
                               fontSize: 18)
@@ -265,10 +265,10 @@ class _RegisterPageState extends State<RegisterPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text('I am a member!', style: TextStyle(fontWeight: FontWeight.bold)),
+                Text('이미 가입된 상태라면', style: TextStyle(fontWeight: FontWeight.bold)),
                 GestureDetector(
                     onTap: widget.showLoginPage,
-                    child: Text(' Login now', style:
+                    child: Text(' 로그인', style:
                     TextStyle(color: Colors.blue, fontWeight: FontWeight.bold)))
               ],
             )

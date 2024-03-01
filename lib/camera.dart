@@ -22,6 +22,7 @@ class DisplayPictureScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.background,
       appBar: AppBar(
         title: Text('이미지 업로드', style: GoogleFonts.bebasNeue(fontWeight: FontWeight.bold)),
         leading: IconButton(
@@ -44,12 +45,14 @@ class DisplayPictureScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Image.file(File(imagePath)),
-        ],
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Image.file(File(imagePath)),
+          ],
+        ),
       ),
     );
   }

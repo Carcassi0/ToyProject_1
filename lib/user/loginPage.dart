@@ -40,7 +40,7 @@ class _loginPageState extends State<loginPage> {
   }
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromRGBO(255, 190, 152, 1),
+      backgroundColor: Theme.of(context).colorScheme.background,
       body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -61,7 +61,7 @@ class _loginPageState extends State<loginPage> {
                     controller: _emailController,
                     decoration: InputDecoration(
                       border: InputBorder.none,
-                      hintText: 'Email', hintStyle: TextStyle(fontSize: 18)
+                      hintText: '이메일', hintStyle: TextStyle(fontSize: 18)
                     ),
                   ),
                 ),
@@ -85,7 +85,7 @@ class _loginPageState extends State<loginPage> {
                     obscureText: true,
                     decoration: InputDecoration(
                       border: InputBorder.none,
-                      hintText: 'Password', hintStyle: TextStyle(fontSize: 18)
+                      hintText: '비밀번호', hintStyle: TextStyle(fontSize: 18)
                     ),
                   ),
                 ),

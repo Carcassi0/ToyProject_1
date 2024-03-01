@@ -64,82 +64,89 @@ class _MyHomePageState extends State<MyHomePage> {
 
     return Scaffold(
       key: _scaffoldKey,
+      backgroundColor: Theme.of(context).colorScheme.background,
       drawer: Drawer(
-        backgroundColor: const Color.fromRGBO(254, 213, 188, 1),
+        backgroundColor: Theme.of(context).colorScheme.background,
         width: width * 0.75,
-        child: ListView(
-          physics: const NeverScrollableScrollPhysics(),
-          padding: EdgeInsets.zero,
+        child: Stack(
           children: <Widget>[
-            UserAccountsDrawerHeader(
-              decoration: BoxDecoration(color: Colors.white),
-              accountName: FutureBuilder(
-                future: _getUserName(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const CircularProgressIndicator();
-                  } else if (snapshot.hasError) {
-                    return Text('Error: ${snapshot.error}');
-                  } else {
-                    return Text(
-                      '사용자: ${snapshot.data} 님',
-                      style: GoogleFonts.notoSans(fontSize: 20, color: Colors.black)
+            ListView(
+              physics: const NeverScrollableScrollPhysics(),
+              padding: EdgeInsets.zero,
+              children: <Widget>[
+                UserAccountsDrawerHeader(
+                  accountName: FutureBuilder(
+                    future: _getUserName(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const CircularProgressIndicator();
+                      } else if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}');
+                      } else {
+                        return Text(
+                            '사용자: ${snapshot.data} 님',
+                            style: GoogleFonts.notoSans(fontSize: 20)
+                        );
+                      }
+                    },
+                  ),
+                  accountEmail: null, // 이메일 주소가 없는 경우 null을 전달합니다.
+
+                ),
+                ListTile(
+                  leading: Icon(Icons.person),
+                  title: Text(
+                      '마이페이지',
+                      style: GoogleFonts.notoSans()
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const settingPage()),
                     );
-                  }
+                  },
+                ),
+                ListTile(
+                  leading: Icon(Icons.settings),
+                  title: Text(
+                      '설정',
+                      style: GoogleFonts.notoSans()
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const settingPage()),
+                    );
+                  },
+                ),
+              ],
+            ),
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 50,
+              child: ListTile(
+                leading: Icon(Icons.logout),
+                title: Text(
+                    '로그아웃',
+                    style: GoogleFonts.notoSans()
+                ),
+                onTap: () {
+                  FirebaseAuth.instance.signOut();
                 },
               ),
-              accountEmail: null, // 이메일 주소가 없는 경우 null을 전달합니다.
-              currentAccountPicture: const CircleAvatar(
-                child: Icon(Icons.person),
-                backgroundColor: Colors.grey,
-              ),
-            ),
-            ListTile(
-              leading: Icon(Icons.person),
-              title: Text(
-                '마이페이지',
-                style: GoogleFonts.notoSans(color: Colors.black)
-              ),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const settingPage()),
-                );
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.settings),
-              title: Text(
-                '설정',
-                style: GoogleFonts.notoSans(color: Colors.black)
-              ),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const settingPage()),
-                );
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.logout),
-              title: Text(
-                '로그아웃',
-                style: GoogleFonts.notoSans(color: Colors.black)
-              ),
-              onTap: () {
-                FirebaseAuth.instance.signOut();
-              },
             ),
           ],
         ),
       ),
 
 
+
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         physics: const NeverScrollableScrollPhysics(),
         child: Container(
-          color: const Color.fromRGBO(254, 213, 188, 100),
+          color: Theme.of(context).colorScheme.background,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -149,7 +156,6 @@ class _MyHomePageState extends State<MyHomePage> {
                   onTap: () => _scaffoldKey.currentState?.openDrawer(),
                   child: const Icon(
                     Icons.menu,
-                    color: Colors.black,
                     size: 45,
                   ),
                 ),
@@ -171,7 +177,6 @@ class _MyHomePageState extends State<MyHomePage> {
                             '환영합니다, ${snapshot.data} 님',
                             style: GoogleFonts.notoSans(
                               fontSize: 35,
-                              color: Colors.black,
                               fontWeight: FontWeight.w800,
                               letterSpacing: 1,
                             )
@@ -191,7 +196,6 @@ class _MyHomePageState extends State<MyHomePage> {
                       user.email!,
                       style: GoogleFonts.notoSans(
                         fontSize: 19,
-                        color: Colors.black,
                         fontWeight: FontWeight.w400,
                         letterSpacing: 1,
                       )
@@ -206,7 +210,6 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               Container(
                 decoration: const BoxDecoration(
-                  color: Color.fromRGBO(255, 190, 152, 1),
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(30),
                     topRight: Radius.circular(30),
@@ -251,10 +254,8 @@ class _MyHomePageState extends State<MyHomePage> {
                           margin: const EdgeInsets.symmetric(vertical: 1, horizontal: 10),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(20),
-                            color: const Color.fromRGBO(254, 213, 188, 1),
-                            boxShadow: const [
-                              BoxShadow(color: Colors.black12, spreadRadius: 1, blurRadius: 5)
-                            ],
+                            color: Theme.of(context).colorScheme.primary,
+                            border: Border.all(width: 2.5)
                           ),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
