@@ -20,6 +20,7 @@ class DisplayPictureScreen extends StatelessWidget {
   const DisplayPictureScreen({Key? key, required this.imagePath}) : super(key: key);
 
   @override
+
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
@@ -40,7 +41,6 @@ class DisplayPictureScreen extends StatelessWidget {
               saveImageUrlToFirestore(imageUrl, imagePath);
 
               Navigator.pop(context, imageUrl);
-
             },
           ),
         ],
@@ -56,6 +56,10 @@ class DisplayPictureScreen extends StatelessWidget {
       ),
     );
   }
+
+
+
+
   Future<String> uploadImageToFirebaseStorage(String imagePath) async {
     // 이미지를 압축합니다.
     final compressedImage = await FlutterImageCompress.compressAndGetFile(
@@ -76,10 +80,13 @@ class DisplayPictureScreen extends StatelessWidget {
 
   void saveImageUrlToFirestore(String imageUrl, String imagePath) {
     final fileName = p.withoutExtension(p.basename(imagePath));
+    final now = DateTime.now();
     // Firebase Firestore에 이미지 URL을 저장합니다.
     FirebaseFirestore.instance.collection('images').add({
       'storeName' : fileName,
       'imageUrl': imageUrl,
+      'uploadDate': '${now.month.toString().padLeft(2, '0')}월 ${now.day.toString().padLeft(2, '0')}일 ${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}',
+      'uploadUser': '위의종'
       // 다른 필드에 대한 추가 정보를 저장할 수 있습니다.
     });
   }
@@ -182,6 +189,7 @@ class _CameraPreviewScreenState extends State<CameraPreviewScreen> {
   void dispose() {
     _controller.dispose();
     super.dispose();
+
   }
   // 이미지를 Firebase Storage에 업로드하고 Firestore에 이미지 URL을 저장합니다.
   Future<void> _uploadImageToFirebaseStorage(String imagePath) async {

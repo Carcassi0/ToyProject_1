@@ -13,15 +13,15 @@ import '../camera.dart';
 import 'mapScreen.dart';
 
 class ImageUploadPage extends StatefulWidget {
+  final List<StoreInfo> storeInfos;
+
+  ImageUploadPage({required this.storeInfos});
   @override
   _ImageUploadPageState createState() => _ImageUploadPageState();
 }
 
 class _ImageUploadPageState extends State<ImageUploadPage> {
   String? get docId => '02cA590Y5VJmUMNhHHuj';
-
-  late List<StoreInfo> storeInfos = [];
-
 
   Future<List<List<dynamic>>> readCoordinatesFromCSV(String filePath) async {
     final csvContent = await rootBundle.loadString(filePath);
@@ -41,7 +41,6 @@ class _ImageUploadPageState extends State<ImageUploadPage> {
     super.initState();
     _initializeCamera();
     _picker = ImagePicker();
-    _readStoreInfoFromCSV("assets/baseData.csv");
   }
 
   Future<void> _initializeCamera() async {
@@ -62,31 +61,6 @@ class _ImageUploadPageState extends State<ImageUploadPage> {
     _initializeControllerFuture = _controller.initialize();
   }
 
-  Future<void> _readStoreInfoFromCSV(String filePath) async {
-    final csvContent = await rootBundle.loadString(filePath);
-    final List<List<dynamic>> csvData = const CsvToListConverter().convert(csvContent);
-    final List<List<dynamic>> coordinates = csvData.skip(1).toList();
-
-    for (final coordinate in coordinates) {
-      final id = coordinate[0].toString();
-      final closingDate = coordinate[1].toString();
-      final name = coordinate[2].toString();
-      final latitude = double.parse(coordinate[4].toString());
-      final longitude = double.parse(coordinate[3].toString());
-      final description = coordinate[5].toString();
-
-      final storeInfo = StoreInfo(
-        id: id,
-        closingDate: closingDate,
-        name: name,
-        latitude: latitude,
-        longitude: longitude,
-        description: description,
-      );
-
-      storeInfos.add(storeInfo);
-    }
-  }
 
   Future<void> _uploadImage(ImageSource source, StoreInfo storeInfo) async {
     final XFile? image = await _picker.pickImage(source: source);
@@ -125,10 +99,10 @@ class _ImageUploadPageState extends State<ImageUploadPage> {
             FutureBuilder<QuerySnapshot>(
 
               future: FirebaseFirestore.instance
-                  .collection('images')
-                  .where('storeName', isGreaterThanOrEqualTo: '${storeInfo.name}_')
-                  .where('storeName', isLessThan: '${storeInfo.name}_\uf8ff')
-                  .get(),
+                    .collection('images')
+                    .where('storeName', isGreaterThanOrEqualTo: '${widget.storeInfos.first.name}_')
+                    .where('storeName', isLessThan: '${widget.storeInfos.first.name}_\uf8ff')
+                    .get(),
               builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (snapshot.hasError) {
                   return Image.asset('assets/non.png'); // 에러 발생 시 아무것도 반환하지 않습니다.
@@ -137,8 +111,7 @@ class _ImageUploadPageState extends State<ImageUploadPage> {
                   if (snapshot.data == null || snapshot.data!.docs.isEmpty) {
                     return Image.asset('assets/non.png'); // 데이터 없을 때 아무것도 반환하지 않습니다.
                   }
-                  // 여기에서는 storeName이 storeInfo.name과 일치하는 문서를 찾아서 그 중 첫 번째 문서를 가져옵니다.
-                  // 날짜 부분을 제외하고 가져오기 때문에 동일한 상점 이름을 가진 여러 문서 중에서도 상관없이 가져올 수 있습니다.
+
                   return Column(
                     children: snapshot.data!.docs.map((doc) {
                       final imageUrl = doc.get('imageUrl') as String?;
@@ -154,14 +127,7 @@ class _ImageUploadPageState extends State<ImageUploadPage> {
               },
             ),
 
-            ElevatedButton(
-              onPressed: () => _uploadImage(ImageSource.gallery, storeInfos.first),
-              child: Text('갤러리에서 등록'),
-            ),
-            ElevatedButton(
-              onPressed: () => _uploadImage(ImageSource.camera, storeInfos.first),
-              child: Text('카메라'),
-            ),
+
           ],
         ),
       ),
@@ -191,22 +157,3 @@ class _ImageUploadPageState extends State<ImageUploadPage> {
 
 }
 // 왜 이렇게 할 생각을 못 했을까.... 리스트뷰 객체 생성.
-class StoreInfo {
-  final String id;
-  final String closingDate;
-  final String name;
-  final double latitude;
-  final double longitude;
-  final String description;
-  String? imagePath;
-
-  StoreInfo({
-    required this.id,
-    required this.closingDate,
-    required this.name,
-    required this.latitude,
-    required this.longitude,
-    required this.description,
-    this.imagePath
-  });
-}

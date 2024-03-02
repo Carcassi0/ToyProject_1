@@ -125,7 +125,7 @@ class _GoogleMapsState extends State<GoogleMaps> {
               onMapCreated: _onMapCreated,
               initialCameraPosition: CameraPosition(
                 target: _center,
-                zoom: 13.0,
+                zoom: 14.0,
               ),
               markers: _markers,
               circles: _circles,
@@ -140,14 +140,7 @@ class _GoogleMapsState extends State<GoogleMaps> {
                 });
               },
             ),
-            Container(
-                margin: EdgeInsets.only(left: 10, right: 30, top: height*0.73, bottom: 30),
-                child: const Row(
-                  children: [
-                    Icon(Icons.zoom_in, size: 50),
-                    Icon(Icons.zoom_out, size: 50,)
-                  ],
-                ))
+
           ]
       ),
     );
