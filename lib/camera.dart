@@ -36,9 +36,15 @@ class DisplayPictureScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.check),
             onPressed: () async {
+
+              AlertDialog(
+                content:
+                Center(child: Text('업로드...', style: TextStyle(fontSize: 50, fontWeight: FontWeight.bold),)),
+              );
               final imageUrl = await uploadImageToFirebaseStorage(imagePath);
 
               saveImageUrlToFirestore(imageUrl, imagePath);
+
 
               Navigator.pop(context, imageUrl);
             },

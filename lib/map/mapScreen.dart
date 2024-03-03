@@ -111,7 +111,7 @@ class _MyMapScreenState extends State<MyMapScreen> {
             builder: (BuildContext context, ScrollController scrollController) {
               return Container(
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primaryContainer,
+                  color: Theme.of(context).colorScheme.primary,
                   borderRadius: BorderRadius.circular(20),
 
                 ),
@@ -147,29 +147,111 @@ class _MyMapScreenState extends State<MyMapScreen> {
                                       showDialog(
                                         context: context,
                                         builder: (BuildContext context) {
-                                          return Column(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            children: [
-                                          Dialog(
-                                          child: Column(
-                                          mainAxisSize: MainAxisSize.min, // 컨텐츠에 맞게 다이얼로그 크기 조정
-                                            children: <Widget>[
+                                          return Dialog(
+                                          child: SingleChildScrollView(
+                                            physics: NeverScrollableScrollPhysics(),
+                                            child: Column(
+                                            mainAxisSize: MainAxisSize.min, // 컨텐츠에 맞게 다이얼로그 크기 조정
+                                              children: <Widget>[
 
-                                              const SizedBox(height: 30),
+                                                const SizedBox(height: 30),
 
-                                              const Padding(
-                                                padding: EdgeInsets.all(8.0),
-                                                child: Text(
-                                                  '사진 등록 이력',
-                                                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-                                                  textAlign: TextAlign.center,
+                                                const Padding(
+                                                  padding: EdgeInsets.all(8.0),
+                                                  child: Text(
+                                                    '사진 등록 이력',
+                                                    style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                                                    textAlign: TextAlign.center,
+                                                  ),
                                                 ),
-                                              ),
 
-                                              const SizedBox(height: 30),
+                                                const SizedBox(height: 15),
+                                                Row(
+                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                  children: [
+                                                    Container(
+                                                      decoration: BoxDecoration(
+                                                        color: Colors.grey[200],
+                                                        border: Border.all(color: Colors.black, width: 2),
+                                                        borderRadius: BorderRadius.circular(10),
+                                                      ),
+                                                      child: GestureDetector(
+                                                        child: const Padding(
+                                                          padding: EdgeInsets.all(8.0),
+                                                          child: Text(
+                                                            '갤러리에서 등록',
+                                                            style: TextStyle(fontSize: 15),
+                                                          ),
+                                                        ),
+                                                        onTap: () async {
+                                                          final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+                                                          if (image == null) return;
+                                                          final now = DateTime.now();
+                                                          final formattedDate =
+                                                              '${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}'
+                                                              '${now.hour.toString().padLeft(2, '0')}${now.minute.toString().padLeft(2, '0')}';
+                                                          final temporaryPath = join((await getTemporaryDirectory()).path, '${storeInfo.name}_$formattedDate.png');
 
-                                              SingleChildScrollView(
-                                                child: ListBody(
+                                                          Navigator.pop(context);
+
+
+                                                          final selectedImage = image;
+                                                          await selectedImage?.saveTo(temporaryPath);
+
+                                                          final uploadedImagePath = await Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                  builder: (context) => DisplayPictureScreen(imagePath: temporaryPath)
+                                                              )
+                                                          );
+                                                        },
+                                                      ),
+                                                    ),
+
+                                                    const SizedBox(width: 10),
+
+                                                    Container(
+                                                      decoration: BoxDecoration(
+                                                        color: Colors.grey[200],
+                                                        border: Border.all(color: Colors.black, width: 2),
+                                                        borderRadius: BorderRadius.circular(10),
+                                                      ),
+                                                      child: GestureDetector(
+                                                        child: const Padding(
+                                                          padding: EdgeInsets.all(8.0),
+                                                          child: Text(
+                                                            '카메라',
+                                                            style: TextStyle(fontSize: 15),
+                                                          ),
+                                                        ),
+                                                        onTap: () async {
+                                                          XFile? image = await _picker.pickImage(source: ImageSource.camera);
+                                                          if (image == null) return;
+                                                          final now = DateTime.now();
+                                                          final formattedDate =
+                                                              '${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}'
+                                                              '${now.hour.toString().padLeft(2, '0')}${now.minute.toString().padLeft(2, '0')}';
+                                                          final temporaryPath = join((await getTemporaryDirectory()).path, '${storeInfo.name}_$formattedDate.png');
+                                                          Navigator.pop(context);
+
+                                                          final selectedImage = image;
+                                                          await selectedImage?.saveTo(temporaryPath);
+
+                                                          final uploadedImagePath = await Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                              builder: (context) => DisplayPictureScreen(imagePath: temporaryPath),
+                                                            ),
+                                                          );
+                                                        },
+                                                      ),
+                                                    )
+                                                  ],
+                                                ),
+
+                                                const SizedBox(height: 20),
+
+                                                ListBody(
                                                   children: <Widget>[
                                                     FutureBuilder<QuerySnapshot>(
                                                       future: FirebaseFirestore.instance
@@ -187,6 +269,7 @@ class _MyMapScreenState extends State<MyMapScreen> {
                                                           }
                                                           // 그리드뷰로 이미지를 출력합니다.
                                                           return GridView.count(
+                                                            scrollDirection: Axis.vertical,
                                                             shrinkWrap: true,
                                                             crossAxisCount: 2,
                                                             crossAxisSpacing: 10,
@@ -208,8 +291,6 @@ class _MyMapScreenState extends State<MyMapScreen> {
                                                                               ClipRRect(
                                                                                 borderRadius: BorderRadius.circular(20.0),
                                                                                 child: Container(
-                                                                                  // width: MediaQuery.of(context).size.width * 0.8,
-                                                                                  // height: MediaQuery.of(context).size.height * 0.7,
                                                                                   child: Image.network(
                                                                                     imageUrl,
                                                                                     fit: BoxFit.contain
@@ -232,7 +313,9 @@ class _MyMapScreenState extends State<MyMapScreen> {
                                                                                     ),
                                                                                   ),
                                                                                 ),
-                                                                              )
+                                                                              ),
+                                                                              SizedBox(height: 10),
+                                                                              // MaterialButton(onPressed: )
                                                                             ],
                                                                           ),
                                                                         );
@@ -262,97 +345,12 @@ class _MyMapScreenState extends State<MyMapScreen> {
                                                       },
                                                     ),
 
-                                                    const SizedBox(height: 30),
-                                                      Row(
-                                                        mainAxisAlignment: MainAxisAlignment.center,
-                                                        children: [
-                                                          Container(
-                                                            decoration: BoxDecoration(
-                                                              color: Colors.grey[200],
-                                                              border: Border.all(color: Colors.black, width: 2),
-                                                              borderRadius: BorderRadius.circular(10),
-                                                            ),
-                                                            child: GestureDetector(
-                                                              child: const Padding(
-                                                                padding: EdgeInsets.all(8.0),
-                                                                child: Text(
-                                                                  '갤러리에서 등록',
-                                                                  style: TextStyle(fontSize: 15),
-                                                                ),
-                                                              ),
-                                                              onTap: () async {
-                                                                final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-                                                                if (image == null) return;
 
-                                                                final now = DateTime.now();
-                                                                final formattedDate =
-                                                                    '${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}'
-                                                                    '${now.hour.toString().padLeft(2, '0')}${now.minute.toString().padLeft(2, '0')}';
-                                                                final temporaryPath = join((await getTemporaryDirectory()).path, '${storeInfo.name}_$formattedDate.png');
-
-                                                                Navigator.pop(context);
-
-
-                                                                final selectedImage = image;
-
-                                                                // 이미지를 path에 저장
-                                                                await selectedImage?.saveTo(temporaryPath);
-
-                                                                Navigator.push(
-                                                                  context,
-                                                                  MaterialPageRoute(
-                                                                    builder: (context) => DisplayPictureScreen(imagePath: temporaryPath)
-                                                                  )
-                                                                );
-                                                              },
-                                                            ),
-                                                          ),
-                                                          const SizedBox(width: 10),
-                                                          Container(
-                                                            decoration: BoxDecoration(
-                                                              color: Colors.grey[200],
-                                                              border: Border.all(color: Colors.black, width: 2),
-                                                              borderRadius: BorderRadius.circular(10),
-                                                            ),
-                                                            child: GestureDetector(
-                                                              child: const Padding(
-                                                                padding: EdgeInsets.all(8.0),
-                                                                child: Text(
-                                                                  '카메라',
-                                                                  style: TextStyle(fontSize: 15),
-                                                                ),
-                                                              ),
-                                                              onTap: () async {
-                                                                XFile? image = await _picker.pickImage(source: ImageSource.camera);
-                                                                if (image == null) return;
-                                                                final now = DateTime.now();
-                                                                final formattedDate =
-                                                                    '${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}'
-                                                                    '${now.hour.toString().padLeft(2, '0')}${now.minute.toString().padLeft(2, '0')}';
-                                                                final temporaryPath = join((await getTemporaryDirectory()).path, '${storeInfo.name}_$formattedDate.png');
-                                                                Navigator.pop(context);
-
-                                                                final selectedImage = image;
-                                                                await selectedImage?.saveTo(temporaryPath);
-
-                                                                final uploadedImagePath = await Navigator.push(
-                                                                  context,
-                                                                  MaterialPageRoute(
-                                                                    builder: (context) => DisplayPictureScreen(imagePath: temporaryPath),
-                                                                  ),
-                                                                );
-                                                              },
-                                                            ),
-                                                          )
-                                                        ],
-                                                      ),
-                                                    const SizedBox(height: 30)
                                                     ],
                                                   ),
-                                                ),]
-                                              ),)
-                                            ],
-                                          );
+                                                const SizedBox(height: 30)]
+                                                ),
+                                          ),);
                                         },
                                       );
                                     }, // onTap시 화면 중앙에 이미지 출력
