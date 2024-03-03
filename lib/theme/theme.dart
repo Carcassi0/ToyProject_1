@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 
 ThemeData lightmode = ThemeData(
   brightness: Brightness.light,
-  colorScheme: ColorScheme.light(
-    background: Colors.grey.shade400,
-    primary: Colors.grey.shade500,
-    secondary: Colors.deepPurple.shade400
+  colorScheme: ColorScheme.fromSeed(
+    seedColor: Colors.grey,
+    background: Colors.grey,
+    primary: Colors.grey,
+    secondary: Colors.deepPurple,
+    error: Colors.red
   )
 );
 

@@ -203,13 +203,17 @@ class _MyMapScreenState extends State<MyMapScreen> {
                                                                       builder: (BuildContext context) {
                                                                         return AlertDialog(
                                                                           content: Column(
+                                                                            mainAxisAlignment: MainAxisAlignment.center,
                                                                             children: [
-                                                                              SizedBox(
-                                                                                width: MediaQuery.of(context).size.width * 0.8,
-                                                                                height: MediaQuery.of(context).size.height * 0.7,
-                                                                                child: Image.network(
-                                                                                  imageUrl,
-                                                                                  fit: BoxFit.contain
+                                                                              ClipRRect(
+                                                                                borderRadius: BorderRadius.circular(20.0),
+                                                                                child: Container(
+                                                                                  // width: MediaQuery.of(context).size.width * 0.8,
+                                                                                  // height: MediaQuery.of(context).size.height * 0.7,
+                                                                                  child: Image.network(
+                                                                                    imageUrl,
+                                                                                    fit: BoxFit.contain
+                                                                                  ),
                                                                                 ),
                                                                               ),
                                                                               SizedBox(height: 10),
@@ -235,12 +239,15 @@ class _MyMapScreenState extends State<MyMapScreen> {
                                                                       },
                                                                     );
                                                                   },
-                                                                  child: Container(
-                                                                    width: MediaQuery.of(context).size.width * 0.4,
-                                                                    height: 200,
-                                                                    child: Image.network(
-                                                                      imageUrl,
-                                                                      fit: BoxFit.contain,
+                                                                  child: ClipRRect(
+                                                                    borderRadius: BorderRadius.circular(20.0),
+                                                                    child: Container(
+                                                                      width: MediaQuery.of(context).size.width * 0.4,
+                                                                      height: 200,
+                                                                      child: Image.network(
+                                                                        imageUrl,
+                                                                        fit: BoxFit.contain,
+                                                                      ),
                                                                     ),
                                                                   ),
                                                                 );

@@ -34,7 +34,32 @@ class _GoogleMapsState extends State<GoogleMaps> {
   final LatLng _center = const LatLng(37.285172, 127.065014);
   final Set<Marker> _markers = {};
   final Set<Circle> _circles = {};
+  final now = DateTime.now();
   double _currentZoom = 13.0;
+
+  BitmapDescriptor getMarkerIcon(dateFromNow){
+    if(dateFromNow>14)
+      return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed);
+    else if(dateFromNow<=14 && dateFromNow>7)
+      return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue);
+    else if(dateFromNow<=7 && dateFromNow>=0)
+      return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen);
+    else
+      return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue);
+  }
+
+  int calculateDays(String dateString) {
+    // 주어진 문자열 형식의 날짜를 DateTime 객체로 변환
+    List<String> dateParts = dateString.split('.');
+    DateTime specifiedDate = DateTime(int.parse(dateParts[0]), int.parse(dateParts[1]), int.parse(dateParts[2]));
+
+    DateTime today = DateTime.now();
+
+    Duration difference = today.difference(specifiedDate);
+
+    // 일 수 반환
+    return difference.inDays;
+  }
 
 
   @override
@@ -63,7 +88,7 @@ class _GoogleMapsState extends State<GoogleMaps> {
                 snippet: "폐업일자:${coord[1].toString()}\n${coord[5].toString()}",
               ),
               visible: true,
-              icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+              icon: getMarkerIcon(calculateDays(coord[1]))//BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
             );
             _markers.add(marker);
             print("Added marker: $marker"); // 마커 추가 확인을 위한 출력
@@ -120,28 +145,27 @@ class _GoogleMapsState extends State<GoogleMaps> {
     width = MediaQuery.of(context).size.width;
     return Scaffold(
       body: Stack(
-          children:[
-            GoogleMap(
-              onMapCreated: _onMapCreated,
-              initialCameraPosition: CameraPosition(
-                target: _center,
-                zoom: 14.0,
-              ),
-              markers: _markers,
-              circles: _circles,
-              onCameraIdle: (){
-                mapController.getZoomLevel().then((value){
-                  setState(() {
-                    _currentZoom = value;
-                    if(_currentZoom >= 12.0){
-                      _loadMarkersFromCSV();
-                    }
-                  });
-                });
-              },
-            ),
-
-          ]
+        children: <Widget>[GoogleMap(
+          onMapCreated: _onMapCreated,
+          initialCameraPosition: CameraPosition(
+            target: _center,
+            zoom: 14.0,
+          ),
+          myLocationEnabled: true,
+          markers: _markers,
+          circles: _circles,
+          onCameraIdle: (){
+            mapController.getZoomLevel().then((value){
+              setState(() {
+                _currentZoom = value;
+                if(_currentZoom >= 12.0){
+                  _loadMarkersFromCSV();
+                }
+              });
+            });
+          },
+        ),
+      ]
       ),
     );
   }
