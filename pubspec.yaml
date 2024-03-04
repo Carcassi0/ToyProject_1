@@ -53,6 +53,7 @@ dependencies:
   camera: ^0.10.5+9
   flutter_image_compress: ^2.1.0
   path: ^1.8.3
+  location: ^5.0.3
 
 
 dev_dependencies:

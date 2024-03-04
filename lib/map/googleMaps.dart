@@ -19,6 +19,7 @@ import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'imageUpload.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:location/location.dart';
 
 
 class GoogleMaps extends StatefulWidget {
@@ -141,6 +142,8 @@ class _GoogleMapsState extends State<GoogleMaps> {
   }
 
 
+
+
   @override
   Widget build(BuildContext context) {
     var height, width;
@@ -171,11 +174,35 @@ class _GoogleMapsState extends State<GoogleMaps> {
         ),
           Positioned(
             top: 60,right: 25,
-            child: FloatingActionButton(onPressed: (){},
+            child: FloatingActionButton(onPressed: (){_locateUser();},
             child: Icon(Icons.location_searching_rounded, size: 30,)),
           )
       ]
       ),
     );
   }
+
+  void _locateUser() async {
+    Location location = Location();
+    LocationData? currentLocation;
+
+    try {
+      currentLocation = await location.getLocation();
+
+      if (currentLocation != null) {
+        mapController.animateCamera(CameraUpdate.newCameraPosition(
+          CameraPosition(
+            target: LatLng(currentLocation.latitude!, currentLocation.longitude!),
+            zoom: 14.4746,
+          ),
+        ));
+      } else {
+        print("Failed to get current location.");
+      }
+    } catch (e) {
+      print("Error getting current location: $e");
+    }
+  }
+
+
 }

@@ -6,7 +6,7 @@ import 'package:csv/csv.dart';
 
 void downloadCSV() async {
   // Firebase Storage에서 파일 다운로드
-  final ref = FirebaseStorage.instance.ref().child('your_file.csv');
+  final ref = FirebaseStorage.instance.ref().child('baseData.csv');
   final bytes = await ref.getData();
 
   // 앱의 로컬 저장소에 파일 저장
