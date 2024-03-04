@@ -61,7 +61,7 @@ class _loginPageState extends State<loginPage> {
                     controller: _emailController,
                     decoration: InputDecoration(
                       border: InputBorder.none,
-                      hintText: '이메일', hintStyle: TextStyle(fontSize: 18)
+                      hintText: '이메일', hintStyle: TextStyle(fontSize: 20)
                     ),
                   ),
                 ),
@@ -85,7 +85,7 @@ class _loginPageState extends State<loginPage> {
                     obscureText: true,
                     decoration: InputDecoration(
                       border: InputBorder.none,
-                      hintText: '비밀번호', hintStyle: TextStyle(fontSize: 18)
+                      hintText: '비밀번호', hintStyle: TextStyle(fontSize: 20)
                     ),
                   ),
                 ),
@@ -120,19 +120,19 @@ class _loginPageState extends State<loginPage> {
                 onTap: signIn,
                 child: Container(
                   padding: EdgeInsets.all(20),
-                  decoration: BoxDecoration(color: Colors.black,
+                  decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary,
                   borderRadius: BorderRadius.circular(20)),
                   child: Center(
                     child: Text('로 그 인',
-                    style: TextStyle(color: Colors.white,
+                    style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    fontSize: 18)
+                    fontSize: 20)
                     )
                   ),
                 ),
               ),
             ),
-            SizedBox(height: 25),
+            SizedBox(height: 35),
 
             Row(
               mainAxisAlignment: MainAxisAlignment.center,

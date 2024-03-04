@@ -36,7 +36,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     List<String> menu = ['지도', '업무관리', '알림', '요약'];
     List<IconData> menuIcon = [
-      Icons.map, Icons.list, Icons.notifications, Icons.my_library_books
+      Icons.map_rounded, Icons.list_rounded, Icons.notification_important_rounded, Icons.my_library_books_rounded
     ];
 
     final user = FirebaseAuth.instance.currentUser!;
@@ -85,7 +85,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       } else {
                         return Text(
                             '사용자: ${snapshot.data} 님',
-                            style: GoogleFonts.notoSans(fontSize: 20)
+                            style: GoogleFonts.notoSans(fontSize: 20, fontWeight: FontWeight.w500)
                         );
                       }
                     },
@@ -157,7 +157,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: InkWell(
                     onTap: () => _scaffoldKey.currentState?.openDrawer(),
                     child: const Icon(
-                      Icons.menu,
+                      Icons.menu_rounded,
                       size: 45,
                     ),
                   ),

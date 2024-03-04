@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -91,6 +92,35 @@ class _MyMapScreenState extends State<MyMapScreen> {
     }
   }
 
+
+  Future<void> deleteImage(String imageUrl) async {
+    try {
+      await FirebaseFirestore.instance.collection('images')
+          .where('imageUrl', isEqualTo: '${imageUrl}')
+          .get()
+          .then((querySnapshot) {
+        querySnapshot.docs.forEach((doc) {
+          doc.reference.delete();
+        });
+      });
+      Navigator.pop(context);// 이미지 삭제 후 현재 화면을 닫습니다.
+    } catch (error) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            content: Text('삭제 중 에러가 발생했습니다: $error'),
+          );
+        },
+      );
+      // 오류 처리 로직 추가 가능
+    }
+  }
+
+
+
+
+
   Widget build(BuildContext context) {
     var height, width;
     height = MediaQuery.of(context).size.height;
@@ -111,7 +141,7 @@ class _MyMapScreenState extends State<MyMapScreen> {
             builder: (BuildContext context, ScrollController scrollController) {
               return Container(
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary,
+                  color: Theme.of(context).colorScheme.primaryContainer,
                   borderRadius: BorderRadius.circular(20),
 
                 ),
@@ -156,11 +186,11 @@ class _MyMapScreenState extends State<MyMapScreen> {
 
                                                 const SizedBox(height: 30),
 
-                                                const Padding(
+                                                Padding(
                                                   padding: EdgeInsets.all(8.0),
                                                   child: Text(
                                                     '사진 등록 이력',
-                                                    style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                                                    style: GoogleFonts.notoSans(fontSize: 30, fontWeight: FontWeight.w500),
                                                     textAlign: TextAlign.center,
                                                   ),
                                                 ),
@@ -171,8 +201,8 @@ class _MyMapScreenState extends State<MyMapScreen> {
                                                   children: [
                                                     Container(
                                                       decoration: BoxDecoration(
-                                                        color: Colors.grey[200],
-                                                        border: Border.all(color: Colors.black, width: 2),
+                                                        color: Theme.of(context).colorScheme.secondaryContainer,
+                                                        border: Border.all(color: Colors.black, width: 1),
                                                         borderRadius: BorderRadius.circular(10),
                                                       ),
                                                       child: GestureDetector(
@@ -212,8 +242,8 @@ class _MyMapScreenState extends State<MyMapScreen> {
 
                                                     Container(
                                                       decoration: BoxDecoration(
-                                                        color: Colors.grey[200],
-                                                        border: Border.all(color: Colors.black, width: 2),
+                                                        color: Theme.of(context).colorScheme.secondaryContainer,
+                                                        border: Border.all(color: Colors.black, width: 1),
                                                         borderRadius: BorderRadius.circular(10),
                                                       ),
                                                       child: GestureDetector(
@@ -269,10 +299,12 @@ class _MyMapScreenState extends State<MyMapScreen> {
                                                           }
                                                           // 그리드뷰로 이미지를 출력합니다.
                                                           return GridView.count(
+
                                                             scrollDirection: Axis.vertical,
                                                             shrinkWrap: true,
+                                                            childAspectRatio: 1.0,
                                                             crossAxisCount: 2,
-                                                            crossAxisSpacing: 10,
+                                                            crossAxisSpacing: 2,
                                                             mainAxisSpacing: 10,
                                                             children: snapshot.data!.docs.map((doc) {
                                                               final imageUrl = doc.get('imageUrl') as String?;
@@ -293,13 +325,13 @@ class _MyMapScreenState extends State<MyMapScreen> {
                                                                                 child: Container(
                                                                                   child: Image.network(
                                                                                     imageUrl,
+                                                                                    height: 550,
                                                                                     fit: BoxFit.contain
                                                                                   ),
                                                                                 ),
                                                                               ),
-                                                                              SizedBox(height: 10),
+                                                                              SizedBox(height: 5),
                                                                               Card(
-
                                                                                 color: Colors.grey.shade500,
                                                                                 child: Padding(
                                                                                   padding: const EdgeInsets.all(10.0),
@@ -314,8 +346,14 @@ class _MyMapScreenState extends State<MyMapScreen> {
                                                                                   ),
                                                                                 ),
                                                                               ),
-                                                                              SizedBox(height: 10),
-                                                                              // MaterialButton(onPressed: )
+                                                                              SizedBox(height: 2),
+                                                                              MaterialButton(
+                                                                                  onPressed: () async {
+                                                                                    await deleteImage(imageUrl);
+                                                                                    setState(() {});
+                                                                                  },
+                                                                                child: Text('사진 삭제',style: TextStyle(color: Colors.white, fontSize: 18),),
+                                                                                color: Colors.black)
                                                                             ],
                                                                           ),
                                                                         );
@@ -323,13 +361,13 @@ class _MyMapScreenState extends State<MyMapScreen> {
                                                                     );
                                                                   },
                                                                   child: ClipRRect(
-                                                                    borderRadius: BorderRadius.circular(20.0),
+                                                                    borderRadius: BorderRadius.circular(5.0),
                                                                     child: Container(
                                                                       width: MediaQuery.of(context).size.width * 0.4,
                                                                       height: 200,
                                                                       child: Image.network(
                                                                         imageUrl,
-                                                                        fit: BoxFit.contain,
+                                                                        fit: BoxFit.cover,
                                                                       ),
                                                                     ),
                                                                   ),
@@ -380,6 +418,7 @@ class _MyMapScreenState extends State<MyMapScreen> {
     super.dispose();
   }
 
+  
   // 이미지를 리스트에 어떻게 대응시킬건지 생각필요.
   Future<String?> getImageUrlForStore(StoreInfo storeInfo) async {
     try {

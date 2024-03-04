@@ -62,11 +62,14 @@ class _GoogleMapsState extends State<GoogleMaps> {
   }
 
 
+
+
   @override
   void initState() {
     super.initState();
     _loadMarkersFromCSV();
   }
+
 
   Future<void> _loadMarkersFromCSV() async {
     try {
@@ -146,6 +149,7 @@ class _GoogleMapsState extends State<GoogleMaps> {
     return Scaffold(
       body: Stack(
         children: <Widget>[GoogleMap(
+          myLocationButtonEnabled: false,
           onMapCreated: _onMapCreated,
           initialCameraPosition: CameraPosition(
             target: _center,
@@ -165,6 +169,11 @@ class _GoogleMapsState extends State<GoogleMaps> {
             });
           },
         ),
+          Positioned(
+            top: 60,right: 25,
+            child: FloatingActionButton(onPressed: (){},
+            child: Icon(Icons.location_searching_rounded, size: 30,)),
+          )
       ]
       ),
     );
