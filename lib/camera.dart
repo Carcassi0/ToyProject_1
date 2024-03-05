@@ -37,14 +37,18 @@ class DisplayPictureScreen extends StatelessWidget {
             icon: const Icon(Icons.check),
             onPressed: () async {
 
-              AlertDialog(
-                content:
-                Center(child: Text('업로드...', style: TextStyle(fontSize: 50, fontWeight: FontWeight.bold),)),
+              // 이미지 업로드 진행 출력
+              final overlay = Overlay.of(context);
+              final indicator = OverlayEntry(
+                builder: (context) => Center(child: CircularProgressIndicator()),
               );
+              overlay.insert(indicator);
+
               final imageUrl = await uploadImageToFirebaseStorage(imagePath);
 
               saveImageUrlToFirestore(imageUrl, imagePath);
 
+              indicator.remove();
 
               Navigator.pop(context, imageUrl);
             },

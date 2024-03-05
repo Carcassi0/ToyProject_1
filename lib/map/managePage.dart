@@ -20,7 +20,10 @@ class marketingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return Scaffold(
+      // 지점별 업무 진행도
+      // 일일 갱신 데이터 업로드
+      //
 
     );
   }

@@ -169,8 +169,8 @@ class _MyMapScreenState extends State<MyMapScreen> {
                               return Card(
                                 child: ListTile(
                                   onTap: () async {}, // 메모 및 영업 이력 확인할 수 있는 페이지로 이동
-                                  title: Text(storeInfo.name),
-                                  subtitle: Text('폐업일자: ${storeInfo.closingDate}\n${storeInfo.description}'),
+                                  title: Text(storeInfo.name, style: GoogleFonts.notoSans(),),
+                                  subtitle: Text('폐업일자: ${storeInfo.closingDate}\n${storeInfo.description}', style: GoogleFonts.notoSans()),
                                   trailing: GestureDetector(
                                     child: const Icon(Icons.image_rounded, size: 35),
                                     onTap: () {
@@ -178,10 +178,10 @@ class _MyMapScreenState extends State<MyMapScreen> {
                                         context: context,
                                         builder: (BuildContext context) {
                                           return Dialog(
+                                            backgroundColor: Theme.of(context).colorScheme.background,
                                           child: SingleChildScrollView(
-                                            physics: NeverScrollableScrollPhysics(),
-                                            child: Column(
-                                            mainAxisSize: MainAxisSize.min, // 컨텐츠에 맞게 다이얼로그 크기 조정
+                                            scrollDirection: Axis.vertical,
+                                            child: Column(// 컨텐츠에 맞게 다이얼로그 크기 조정
                                               children: <Widget>[
 
                                                 const SizedBox(height: 30),
@@ -281,111 +281,103 @@ class _MyMapScreenState extends State<MyMapScreen> {
 
                                                 const SizedBox(height: 20),
 
-                                                ListBody(
-                                                  children: <Widget>[
-                                                    FutureBuilder<QuerySnapshot>(
-                                                      future: FirebaseFirestore.instance
-                                                          .collection('images')
-                                                          .where('storeName', isGreaterThanOrEqualTo: '${storeInfo.name}_')
-                                                          .where('storeName', isLessThan: '${storeInfo.name}_\uf8ff')
-                                                          .get(),
-                                                      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                                                        if (snapshot.hasError) {
-                                                          return Image.asset('assets/non.png'); // 에러 발생 시 아무것도 반환하지 않습니다.
-                                                        }
-                                                        if (snapshot.connectionState == ConnectionState.done) {
-                                                          if (snapshot.data == null || snapshot.data!.docs.isEmpty) {
-                                                            return Image.asset('assets/non.png'); // 데이터 없을 때 아무것도 반환하지 않습니다.
-                                                          }
-                                                          // 그리드뷰로 이미지를 출력합니다.
-                                                          return GridView.count(
-
-                                                            scrollDirection: Axis.vertical,
-                                                            shrinkWrap: true,
-                                                            childAspectRatio: 1.0,
-                                                            crossAxisCount: 2,
-                                                            crossAxisSpacing: 2,
-                                                            mainAxisSpacing: 10,
-                                                            children: snapshot.data!.docs.map((doc) {
-                                                              final imageUrl = doc.get('imageUrl') as String?;
-                                                              final uploadDate = doc.get('uploadDate') as String?;
-                                                              final uploadUser = doc.get('uploadUser') as String?;
-                                                              if (imageUrl != null && imageUrl.isNotEmpty) {
-                                                                return GestureDetector(
-                                                                  onTap: () {
-                                                                    showDialog(
-                                                                      context: context,
-                                                                      builder: (BuildContext context) {
-                                                                        return AlertDialog(
-                                                                          content: Column(
-                                                                            mainAxisAlignment: MainAxisAlignment.center,
-                                                                            children: [
-                                                                              ClipRRect(
-                                                                                borderRadius: BorderRadius.circular(20.0),
-                                                                                child: Container(
-                                                                                  child: Image.network(
-                                                                                    imageUrl,
-                                                                                    height: 550,
-                                                                                    fit: BoxFit.contain
-                                                                                  ),
-                                                                                ),
-                                                                              ),
-                                                                              SizedBox(height: 5),
-                                                                              Card(
-                                                                                color: Colors.grey.shade500,
-                                                                                child: Padding(
-                                                                                  padding: const EdgeInsets.all(10.0),
-                                                                                  child: Center(
-                                                                                    child: Row(
-                                                                                      children: [
-                                                                                        Text('${uploadUser} :', style: TextStyle(fontSize: 20)),
-                                                                                        SizedBox(width: 10),
-                                                                                        Text(' ${uploadDate}', style: TextStyle(fontSize: 20))
-                                                                                      ],
-                                                                                    ),
-                                                                                  ),
-                                                                                ),
-                                                                              ),
-                                                                              SizedBox(height: 2),
-                                                                              MaterialButton(
-                                                                                  onPressed: () async {
-                                                                                    await deleteImage(imageUrl);
-                                                                                    setState(() {});
-                                                                                  },
-                                                                                child: Text('사진 삭제',style: TextStyle(color: Colors.white, fontSize: 18),),
-                                                                                color: Colors.black)
-                                                                            ],
+                                                FutureBuilder<QuerySnapshot>(
+                                                  future: FirebaseFirestore.instance
+                                                      .collection('images')
+                                                      .where('storeName', isGreaterThanOrEqualTo: '${storeInfo.name}_')
+                                                      .where('storeName', isLessThan: '${storeInfo.name}_\uf8ff')
+                                                      .get(),
+                                                  builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                                                    if (snapshot.hasError) {
+                                                      return Image.asset('assets/non.png'); // 에러 발생 시 아무것도 반환하지 않습니다.
+                                                    }
+                                                    if (snapshot.connectionState == ConnectionState.done) {
+                                                      if (snapshot.data == null || snapshot.data!.docs.isEmpty) {
+                                                        return Image.asset('assets/non.png', height: 300,width: 300,); // 데이터 없을 때 아무것도 반환하지 않습니다.
+                                                      }
+                                                      // 그리드뷰로 이미지를 출력합니다.
+                                                      return GridView.count(
+                                                        physics: NeverScrollableScrollPhysics(),
+                                                        shrinkWrap: true,
+                                                        childAspectRatio: 1.0,
+                                                        crossAxisCount: 2,
+                                                        crossAxisSpacing: 2,
+                                                        mainAxisSpacing: 10,
+                                                        children: snapshot.data!.docs.map((doc) {
+                                                          final imageUrl = doc.get('imageUrl') as String?;
+                                                          final uploadDate = doc.get('uploadDate') as String?;
+                                                          final uploadUser = doc.get('uploadUser') as String?;
+                                                          if (imageUrl != null && imageUrl.isNotEmpty) {
+                                                            return GestureDetector(
+                                                              onTap: () {
+                                                                showDialog(
+                                                                  context: context,
+                                                                  builder: (BuildContext context) {
+                                                                    return AlertDialog(
+                                                                      backgroundColor: Theme.of(context).colorScheme.background,
+                                                                      content: Column(
+                                                                        mainAxisAlignment: MainAxisAlignment.center,
+                                                                        children: [
+                                                                          ClipRRect(
+                                                                            borderRadius: BorderRadius.circular(20.0),
+                                                                            child: Image.network(
+                                                                              imageUrl,
+                                                                              height: 550,
+                                                                              fit: BoxFit.contain
+                                                                            ),
                                                                           ),
-                                                                        );
-                                                                      },
+                                                                          SizedBox(height: 5),
+                                                                          Card(
+                                                                            color: Theme.of(context).colorScheme.primaryContainer,
+                                                                            child: Padding(
+                                                                              padding: const EdgeInsets.all(10.0),
+                                                                              child: Center(
+                                                                                child: Row(
+                                                                                  children: [
+                                                                                    Text('${uploadUser} :', style: TextStyle(fontSize: 20)),
+                                                                                    SizedBox(width: 10),
+                                                                                    Text(' ${uploadDate}', style: TextStyle(fontSize: 20))
+                                                                                  ],
+                                                                                ),
+                                                                              ),
+                                                                            ),
+                                                                          ),
+                                                                          SizedBox(height: 2),
+                                                                          MaterialButton(
+                                                                              onPressed: () async {
+                                                                                await deleteImage(imageUrl);
+                                                                                setState(() {});
+                                                                              },
+                                                                            child: Text('사진 삭제',style: TextStyle(fontSize: 18),),
+                                                                            color: Theme.of(context).colorScheme.primary)
+                                                                        ],
+                                                                      ),
                                                                     );
                                                                   },
-                                                                  child: ClipRRect(
-                                                                    borderRadius: BorderRadius.circular(5.0),
-                                                                    child: Container(
-                                                                      width: MediaQuery.of(context).size.width * 0.4,
-                                                                      height: 200,
-                                                                      child: Image.network(
-                                                                        imageUrl,
-                                                                        fit: BoxFit.cover,
-                                                                      ),
-                                                                    ),
-                                                                  ),
                                                                 );
-                                                              } else {
-                                                                return Image.asset('assets/non.png');
-                                                              }
-                                                            }).toList(),
-                                                          );
+                                                              },
+                                                              child: ClipRRect(
+                                                                borderRadius: BorderRadius.circular(5.0),
+                                                                child: Container(
+                                                                  width: MediaQuery.of(context).size.width * 0.4,
+                                                                  height: 200,
+                                                                  child: Image.network(
+                                                                    imageUrl,
+                                                                    fit: BoxFit.cover,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            );
+                                                          } else {
+                                                            return Image.asset('assets/non.png');
+                                                          }
+                                                        }).toList(),
+                                                      );
 
-                                                        }
-                                                        return Center(child: CircularProgressIndicator());
-                                                      },
-                                                    ),
-
-
-                                                    ],
-                                                  ),
+                                                    }
+                                                    return Center(child: CircularProgressIndicator());
+                                                  },
+                                                ),
                                                 const SizedBox(height: 30)]
                                                 ),
                                           ),);

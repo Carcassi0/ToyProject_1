@@ -213,10 +213,20 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: Container(
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.primary,
-                      borderRadius: BorderRadius.circular(20)
+                      borderRadius: BorderRadius.circular(20),
                     ),
-                    height: 80,
+                    height: 60,
                     width: width,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text('신규 폐업 사업장 ', style: GoogleFonts.notoSans(fontSize: 25, color: Colors.white, fontWeight: FontWeight.w500), ),
+                        Icon(Icons.store_rounded, size: 35,color: Colors.white),
+                        Text(': 19', style: GoogleFonts.notoSans(fontSize: 25, color: Colors.white, fontWeight: FontWeight.w500), )
+                        // 오늘 날짜 기준 이틀 전의 데이터 개수로 대입
+                      ],
+                    ),
                   ),
                 ),
                 
@@ -275,7 +285,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               children: [
                                 Icon(menuIcon[index], size: 55, color: Colors.white,),
                                 Text(menu[index], style: GoogleFonts.notoSans(
-                                    fontSize: 19, fontWeight: FontWeight.w500, color: Colors.white)),
+                                    fontSize: 20, fontWeight: FontWeight.w500, color: Colors.white)),
                               ],
                             ),
                           ),
