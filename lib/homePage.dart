@@ -41,7 +41,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     final user = FirebaseAuth.instance.currentUser!;
 
-    var height, width;
+    double height, width;
     height = MediaQuery.of(context).size.height;
     width = MediaQuery.of(context).size.width;
 
@@ -124,7 +124,7 @@ class _MyHomePageState extends State<MyHomePage> {
             Positioned(
               left: 0,
               right: 0,
-              bottom: 50,
+              bottom: height * 0.08,
               child: ListTile(
                 leading: Icon(Icons.logout),
                 title: Text(
@@ -143,158 +143,161 @@ class _MyHomePageState extends State<MyHomePage> {
 
 
       body: SafeArea(
-        bottom: true,
+        top: true, bottom: true,
         child: SingleChildScrollView(
           scrollDirection: Axis.vertical,
           physics: const NeverScrollableScrollPhysics(),
-          child: Container(
-            color: Theme.of(context).colorScheme.background,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 15, left: 14, right: 20),
-                  child: InkWell(
-                    onTap: () => _scaffoldKey.currentState?.openDrawer(),
-                    child: const Icon(
-                      Icons.menu_rounded,
-                      size: 45,
-                    ),
-                  ),
-                ),
-
-                Padding(
-                  padding: const EdgeInsets.only(top: 75, left: 20, right: 15),
-                  child: Column(
-                    children: [
-                      FutureBuilder(
-                        future: _getUserName(),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState == ConnectionState.waiting) {
-                            return const CircularProgressIndicator();
-                          } else if (snapshot.hasError) {
-                            return Text('Error: ${snapshot.error}');
-                          } else {
-                            return Text(
-                              '환영합니다, ${snapshot.data} 님',
-                              style: GoogleFonts.notoSans(
-                                fontSize: 35,
-                                fontWeight: FontWeight.w500,
-                                letterSpacing: 1,
-                              )
-                            );
-                          }
-                        },
+          child: Padding(
+            padding: const EdgeInsets.all(2.0),
+            child: Container(
+              color: Theme.of(context).colorScheme.background,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(top: height * 0.04, left: width * 0.03),
+                    child: InkWell(
+                      onTap: () => _scaffoldKey.currentState?.openDrawer(),
+                      child: const Icon(
+                        Icons.menu_rounded,
+                        size: 45,
                       ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Padding(
-                  padding: const EdgeInsets.only(left: 22, right: 15),
-                  child: Column(
-                    children: [
-                      Text(
-                        user.email!,
-                        style: GoogleFonts.notoSans(
-                          fontSize: 19,
-                          fontWeight: FontWeight.w400,
-                          letterSpacing: 1,
-                        )
-                      )
-                    ],
-                  ),
-                ),
-                
-                SizedBox(height: 50),
-                
-                Padding(
-                  padding: const EdgeInsets.all(14.0),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primary,
-                      borderRadius: BorderRadius.circular(20),
                     ),
-                    height: 60,
-                    width: width,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                  ),
+
+                  Padding(
+                    padding: EdgeInsets.only(top: height * 0.08, left: width * 0.04),
+                    child: Column(
                       children: [
-                        Text('신규 폐업 사업장 ', style: GoogleFonts.notoSans(fontSize: 25, color: Colors.white, fontWeight: FontWeight.w500), ),
-                        Icon(Icons.store_rounded, size: 35,color: Colors.white),
-                        Text(': 19', style: GoogleFonts.notoSans(fontSize: 25, color: Colors.white, fontWeight: FontWeight.w500), )
-                        // 오늘 날짜 기준 이틀 전의 데이터 개수로 대입
+                        FutureBuilder(
+                          future: _getUserName(),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState == ConnectionState.waiting) {
+                              return const CircularProgressIndicator();
+                            } else if (snapshot.hasError) {
+                              return Text('Error: ${snapshot.error}');
+                            } else {
+                              return Text(
+                                '환영합니다, ${snapshot.data} 님',
+                                style: GoogleFonts.notoSans(
+                                  fontSize: width * 0.09,
+                                  fontWeight: FontWeight.w500,
+                                  letterSpacing: 1,
+                                )
+                              );
+                            }
+                          },
+                        ),
                       ],
                     ),
                   ),
-                ),
-                
-                SizedBox(height: 5),
+                  SizedBox(height: height * 0.01),
+                  Padding(
+                    padding: EdgeInsets.only(left: width * 0.046),
+                    child: Column(
+                      children: [
+                        Text(
+                          user.email!,
+                          style: GoogleFonts.notoSans(
+                            fontSize: 19,
+                            fontWeight: FontWeight.w400,
+                            letterSpacing: 1,
+                          )
+                        )
+                      ],
+                    ),
+                  ),
 
-                Container(
-                  decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(30),
-                      topRight: Radius.circular(30),
-                    ),
-                  ),
-                  height: height * 0.75,
-                  width: width,
-                  child: Padding(
-                    padding: const EdgeInsets.all(6.0),
-                    child: GridView.builder(
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        childAspectRatio: 1.2,
-                        mainAxisSpacing: 20,
+                  SizedBox(height: height * 0.06),
+
+                  Padding(
+                    padding: const EdgeInsets.all(14.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.primary,
+                        borderRadius: BorderRadius.circular(20),
                       ),
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: 4,
-                      itemBuilder: (context, index) {
-                        return InkWell(
-                          onTap: () {
-                            if (index == 0) {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => const MyMapScreen()),
-                              );
-                            }
-                            if (index == 1) {
-                              Navigator.push(
-                                  context, MaterialPageRoute(builder: (context) => const csvPage()));
-                            }
-                            if (index == 2) {
-                              Navigator.push(
-                                  context, MaterialPageRoute(builder: (context) => const csvPage()));
-                            }
-                            if (index == 3) {
-                              Navigator.push(
-                                  context, MaterialPageRoute(builder: (context) => const csvPage()));
-                            }
-                          },
-                          child: Container(
-                            margin: const EdgeInsets.symmetric(vertical: 1, horizontal: 10),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              color: Theme.of(context).colorScheme.primary,
-                            ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                Icon(menuIcon[index], size: 55, color: Colors.white,),
-                                Text(menu[index], style: GoogleFonts.notoSans(
-                                    fontSize: 20, fontWeight: FontWeight.w500, color: Colors.white)),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
+                      height: height * 0.07,
+                      width: width,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text('신규 폐업 사업장 ', style: GoogleFonts.notoSans(fontSize: 25, color: Colors.white, fontWeight: FontWeight.w500), ),
+                          Icon(Icons.store_rounded, size: 35,color: Colors.white),
+                          Text(': 19', style: GoogleFonts.notoSans(fontSize: 25, color: Colors.white, fontWeight: FontWeight.w500), )
+                          // 오늘 날짜 기준 이틀 전의 데이터 개수로 대입
+                        ],
+                      ),
                     ),
                   ),
-                )
-              ],
+
+                  SizedBox(height: height * 0.01),
+
+                  Container(
+                    decoration: const BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(30),
+                        topRight: Radius.circular(30),
+                      ),
+                    ),
+                    height: height * 0.75,
+                    width: width,
+                    child: Padding(
+                      padding: const EdgeInsets.all(6.0),
+                      child: GridView.builder(
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 1.2,
+                          mainAxisSpacing: 20,
+                        ),
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: 4,
+                        itemBuilder: (context, index) {
+                          return InkWell(
+                            onTap: () {
+                              if (index == 0) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => const MyMapScreen()),
+                                );
+                              }
+                              if (index == 1) {
+                                Navigator.push(
+                                    context, MaterialPageRoute(builder: (context) => const csvPage()));
+                              }
+                              if (index == 2) {
+                                Navigator.push(
+                                    context, MaterialPageRoute(builder: (context) => const csvPage()));
+                              }
+                              if (index == 3) {
+                                Navigator.push(
+                                    context, MaterialPageRoute(builder: (context) => const csvPage()));
+                              }
+                            },
+                            child: Container(
+                              margin: const EdgeInsets.symmetric(vertical: 1, horizontal: 10),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  Icon(menuIcon[index], size: 55, color: Colors.white,),
+                                  Text(menu[index], style: GoogleFonts.notoSans(
+                                      fontSize: 20, fontWeight: FontWeight.w500, color: Colors.white)),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  )
+                ],
+              ),
             ),
           ),
         ),

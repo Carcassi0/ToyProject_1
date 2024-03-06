@@ -6,17 +6,18 @@ import 'package:csv/csv.dart';
 
 void downloadCSV() async {
   // Firebase Storage에서 파일 다운로드
-  final ref = FirebaseStorage.instance.ref().child('baseData.csv');
+  // Firebase Storage에서 파일 참조할 때는 폴더명 필요 없음. 원래 폴더가 하나인 구조인데, 콘솔에서 나누어 볼 수 있는 것.
+  final now = DateTime.now();
+
+  final ref = FirebaseStorage.instance.ref().child('${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}.csv');
   final bytes = await ref.getData();
+
+  final formattedDate =
+      '${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}';
 
   // 앱의 로컬 저장소에 파일 저장
   final dir = await getApplicationDocumentsDirectory();
-  final file = File('${dir.path}/your_file.csv');
-  await file.writeAsBytes(bytes);
+  final file = File('${dir.path}/$formattedDate.csv');
+  await file.writeAsBytes(bytes as List<int>);
 
-  // CSV 파일 읽기
-  final csvFile = await File(file.path).openRead();
-  final fields = await csvFile.transform(utf8.decoder).transform(CsvToListConverter()).toList();
-
-  // 이제 'fields' 변수를 사용하여 CSV 데이터를 사용할 수 있습니다.
 }

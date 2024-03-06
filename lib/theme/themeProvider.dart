@@ -21,4 +21,5 @@ class ThemeProvider with ChangeNotifier{
   bool isDarkMode() {
     return _themeData == darkmode;
   }
+
 }

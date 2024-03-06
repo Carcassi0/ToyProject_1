@@ -25,13 +25,14 @@ class DisplayPictureScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
       appBar: AppBar(
-        title: Text('이미지 업로드', style: GoogleFonts.bebasNeue(fontWeight: FontWeight.bold)),
+        title: Text('업로드', style: GoogleFonts.notoSans(fontWeight: FontWeight.w400)),
         leading: IconButton(
           icon: Icon(Icons.close),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
+        backgroundColor: Theme.of(context).colorScheme.background,
         actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.check),

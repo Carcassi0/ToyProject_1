@@ -1,29 +1,25 @@
-import 'dart:io';
+
 import 'dart:async';
-import 'package:doitflutter/user/loginPage.dart';
-import 'package:doitflutter/settingPage.dart';
-import '../settingPage.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:doitflutter/menuPopOver.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:csv/csv.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'dart:convert';
 import 'dart:math' show asin, cos, pi, pow, sin, sqrt;
-import 'package:cp949_dart/cp949_dart.dart' as cp949;
-import 'package:flutter/services.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'imageUpload.dart';
-import 'package:image_picker/image_picker.dart';
+import '../theme/themeProvider.dart';
 import 'package:location/location.dart';
+import 'package:popover/popover.dart';
+import 'mapScreen.dart';
 
 
 class GoogleMaps extends StatefulWidget {
-  const GoogleMaps({Key? key}) : super(key: key);
+  final Function(String) scrollToItem; // 콜백 함수 정의
+  final List<StoreInfo> storeInfos;
+
+  GoogleMaps({required this.scrollToItem, required this.storeInfos, Key? key}) : super(key: key);
 
   @override
   State<GoogleMaps> createState() => _GoogleMapsState();
@@ -37,6 +33,28 @@ class _GoogleMapsState extends State<GoogleMaps> {
   final Set<Circle> _circles = {};
   final now = DateTime.now();
   double _currentZoom = 13.0;
+  String? _darkMapStyle;
+
+
+  Set<Marker> _buildMarkers() {
+    // 마커 생성 코드 작성
+    // 마커를 클릭하면 해당하는 ListView 항목을 스크롤하는 기능 추가
+    return Set<Marker>.from(widget.storeInfos.map((storeInfo) {
+      final markerPosition = LatLng(storeInfo.latitude, storeInfo.longitude);
+      final distance = haversineDistance(_center, markerPosition);
+
+      return Marker(
+        markerId: MarkerId(storeInfo.id),
+        position: markerPosition,
+        onTap: () {
+          // 마커 클릭 시 scrollToItem 콜백 함수 호출하여 해당하는 ListView 항목 스크롤
+          widget.scrollToItem(storeInfo.id);
+        },
+      );
+    }));
+  }
+
+
 
   BitmapDescriptor getMarkerIcon(dateFromNow){
     if(dateFromNow>14)
@@ -69,6 +87,11 @@ class _GoogleMapsState extends State<GoogleMaps> {
   void initState() {
     super.initState();
     _loadMarkersFromCSV();
+    _loadMapStyles();
+  }
+
+  Future _loadMapStyles() async {
+    _darkMapStyle = await rootBundle.loadString('assets/darkModeStyle.json');
   }
 
 
@@ -85,6 +108,10 @@ class _GoogleMapsState extends State<GoogleMaps> {
           final distance = haversineDistance(_center, markerPosition);
           if (distance <= 1000) {
             final marker = Marker(
+              onTap: (){
+                final storeId = '${coord[2].toString()}'; // 마커에 대한 고유한 식별자 (storeInfos의 id와 동일해야 함)
+                widget.scrollToItem(storeId);
+              },
               markerId: MarkerId(coord[2].toString()),
               position: markerPosition,
               infoWindow: InfoWindow(
@@ -149,6 +176,7 @@ class _GoogleMapsState extends State<GoogleMaps> {
     var height, width;
     height = MediaQuery.of(context).size.height;
     width = MediaQuery.of(context).size.width;
+    final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
     return Scaffold(
       body: Stack(
         children: <Widget>[GoogleMap(
@@ -164,6 +192,13 @@ class _GoogleMapsState extends State<GoogleMaps> {
           onCameraIdle: (){
             mapController.getZoomLevel().then((value){
               setState(() {
+                if (themeProvider.isDarkMode()) {
+                  // 다크 모드일 경우 darkMapStyle 적용
+                  mapController!.setMapStyle(_darkMapStyle);
+                } else {
+                  // 다크 모드가 아닐 경우 기본 스타일 적용
+                  mapController!.setMapStyle(null); // 또는 다른 기본 스타일로 변경
+                }
                 _currentZoom = value;
                 if(_currentZoom >= 12.0){
                   _loadMarkersFromCSV();
@@ -173,7 +208,7 @@ class _GoogleMapsState extends State<GoogleMaps> {
           },
         ),
           Positioned(
-            top: 60,right: 25,
+            top: height*0.1,right: width*0.06,
             child: FloatingActionButton(onPressed: (){_locateUser();},
             child: Icon(Icons.location_searching_rounded, size: 30,)),
           )
