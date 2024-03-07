@@ -71,6 +71,8 @@ class _MyHomePageState extends State<MyHomePage> {
         todayStoreInfos.add(storeInfo);
       }
     }
+
+    setState(() {});
   }
 
 

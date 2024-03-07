@@ -51,8 +51,8 @@ class _loginPageState extends State<loginPage> {
               padding: const EdgeInsets.symmetric(horizontal: 25.0),
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border.all(color: Colors.white),
+                  color: Theme.of(context).colorScheme.primaryContainer,
+
                   borderRadius: BorderRadius.circular(20)
                 ),
                 child: Padding(
@@ -74,8 +74,7 @@ class _loginPageState extends State<loginPage> {
               padding: const EdgeInsets.symmetric(horizontal: 25.0),
               child: Container(
                 decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border.all(color: Colors.white),
+                    color: Theme.of(context).colorScheme.primaryContainer,
                     borderRadius: BorderRadius.circular(20)
                 ),
                 child: Padding(
@@ -120,7 +119,7 @@ class _loginPageState extends State<loginPage> {
                 onTap: signIn,
                 child: Container(
                   padding: EdgeInsets.all(20),
-                  decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary,
+                  decoration: BoxDecoration(color: Theme.of(context).colorScheme.onPrimary,
                   borderRadius: BorderRadius.circular(20)),
                   child: Center(
                     child: Text('로 그 인',

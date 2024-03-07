@@ -60,8 +60,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('비밀번호 초기화를 위해 \n이메일을 입력해주세요', style: GoogleFonts.bebasNeue(
-            fontSize: 30)),
+            Text('가입할 때 사용한 이메일로 \n비밀번호 복구 링크가 전송됩니다.', style: GoogleFonts.notoSans(
+            fontSize: 25)),
 
             SizedBox(height: 30),
 
@@ -71,15 +71,15 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 controller: _emailController,
                 decoration: InputDecoration(
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white),
+                    borderSide: BorderSide(color: Theme.of(context).colorScheme.primaryContainer ),
                     borderRadius: BorderRadius.circular(20)
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                    borderRadius: BorderRadius.circular(20)
+                      borderSide: BorderSide(color: Theme.of(context).colorScheme.primaryContainer ),
+                      borderRadius: BorderRadius.circular(20)
                   ),
                   hintText: 'Email', hintStyle: TextStyle(fontSize: 18),
-                  fillColor: Colors.white,
+                  fillColor: Theme.of(context).colorScheme.primaryContainer,
                   filled: true
                 ),
               ),
@@ -88,8 +88,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
             MaterialButton(
               onPressed: passwordReset,
-              child: Text('비밀번호 초기화',style: TextStyle(color: Colors.white, fontSize: 18),),
-              color: Colors.black,
+              child: Text('비밀번호 초기화',style: TextStyle(fontSize: 18),),
+              color: Theme.of(context).colorScheme.onPrimary
             )
           ],
         ),
