@@ -14,6 +14,7 @@ import 'googleMaps.dart';
 import 'package:camera/camera.dart';
 import 'package:doitflutter/camera.dart';
 import 'package:path/path.dart' show join;
+import 'package:intl/intl.dart';
 
 class MyMapScreen extends StatefulWidget {
   const MyMapScreen({Key? key});
@@ -91,6 +92,7 @@ class _MyMapScreenState extends State<MyMapScreen> {
         longitude: longitude,
         description: description,
       );
+
 
       final markerPosition = LatLng(storeInfo.latitude, storeInfo.longitude);
       final distance = haversineDistance(_center, markerPosition);

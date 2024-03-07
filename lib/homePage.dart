@@ -1,6 +1,9 @@
 import 'dart:core';
 import 'dart:async';
+import 'dart:math';
 import 'package:doitflutter/settingPage.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'camera.dart';
 import 'map/mapScreen.dart';
@@ -25,12 +28,51 @@ class _MyHomePageState extends State<MyHomePage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   late ImagePicker _picker = ImagePicker();
   XFile? _image;
+  final LatLng _center = const LatLng(37.285172, 127.065014);
+  late List<StoreInfo> todayStoreInfos = [];
 
   @override
   void initState() {
     super.initState();
     _picker = ImagePicker();
+    _readStoreInfoFromCSV("assets/baseData.csv");
   }
+
+  Future<void> _readStoreInfoFromCSV(String filePath) async {
+    final csvContent = await rootBundle.loadString(filePath);
+    final List<List<dynamic>> csvData = const CsvToListConverter().convert(csvContent);
+    final List<List<dynamic>> coordinates = csvData.skip(1).toList();
+    final now = DateTime.now();
+    DateTime twoDaysAgo = now.subtract(Duration(days: 2));
+    String formattedDate = DateFormat('yyyy.M.d').format(twoDaysAgo);
+
+    for (final coordinate in coordinates) {
+      final id = coordinate[0].toString();
+      final closingDate = coordinate[1].toString();
+      final name = coordinate[2].toString();
+      final latitude = double.parse(coordinate[4].toString());
+      final longitude = double.parse(coordinate[3].toString());
+      final description = coordinate[5].toString();
+
+      final storeInfo = StoreInfo(
+        id: id,
+        closingDate: closingDate,
+        name: name,
+        latitude: latitude,
+        longitude: longitude,
+        description: description,
+      );
+
+
+      final markerPosition = LatLng(storeInfo.latitude, storeInfo.longitude);
+      final distance = haversineDistance(_center, markerPosition);
+
+      if(distance<=1000 && closingDate == formattedDate){
+        todayStoreInfos.add(storeInfo);
+      }
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -41,6 +83,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
     final user = FirebaseAuth.instance.currentUser!;
 
+    // 시간
+    final now = DateTime.now();
+    DateTime twoDaysAgo = now.subtract(Duration(days: 2));
+    String formattedDate = DateFormat('yyyy.M.d').format(twoDaysAgo);
+
+    // 기기 대응
     double height, width;
     height = MediaQuery.of(context).size.height;
     width = MediaQuery.of(context).size.width;
@@ -223,9 +271,9 @@ class _MyHomePageState extends State<MyHomePage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Text('신규 폐업 사업장 ', style: GoogleFonts.notoSans(fontSize: 25, color: Colors.white, fontWeight: FontWeight.w500), ),
-                          Icon(Icons.store_rounded, size: 35,color: Colors.white),
-                          Text(': 19', style: GoogleFonts.notoSans(fontSize: 25, color: Colors.white, fontWeight: FontWeight.w500), )
+                          Text('${formattedDate} 기준 신규 폐업 사업장 ', style: GoogleFonts.notoSans(fontSize: 18, color: Colors.white, fontWeight: FontWeight.w500), ),
+                          Icon(Icons.store_rounded, size: 25,color: Colors.white),
+                          Text(': ${todayStoreInfos.length}', style: GoogleFonts.notoSans(fontSize: 23, color: Colors.white, fontWeight: FontWeight.w500), )
                           // 오늘 날짜 기준 이틀 전의 데이터 개수로 대입
                         ],
                       ),
@@ -303,6 +351,20 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
     );
+  }
+  double haversineDistance(LatLng p1, LatLng p2) {
+    const radiusEarth = 6371.0; // 지구의 반지름 (킬로미터 단위)
+    final lat1 = p1.latitude * (pi / 180.0);
+    final lon1 = p1.longitude * (pi / 180.0);
+    final lat2 = p2.latitude * (pi / 180.0);
+    final lon2 = p2.longitude * (pi / 180.0);
+    final dLat = lat2 - lat1;
+    final dLon = lon2 - lon1;
+    final a = pow(sin(dLat / 2), 2) +
+        cos(lat1) * cos(lat2) * pow(sin(dLon / 2), 2);
+    final c = 2 * asin(sqrt(a));
+    final distance = radiusEarth * c; // 결과값은 킬로미터 단위
+    return distance * 1000.0; // 결과값을 미터 단위로 변환
   }
 }
 
