@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:doitflutter/dataUpdate.dart';
 import 'package:doitflutter/homePage.dart';
 import 'package:doitflutter/theme/theme.dart';
 import 'package:doitflutter/theme/themeProvider.dart';
@@ -18,6 +19,7 @@ import 'theme/theme.dart';
 void main() async { // firebase를 통해 접속하려면 async 필요
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  downloadCSV();
 
   runApp(
     ChangeNotifierProvider(
