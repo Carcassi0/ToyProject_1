@@ -1,6 +1,7 @@
 
 import 'dart:async';
 import 'package:doitflutter/menuPopOver.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -34,6 +35,9 @@ class _GoogleMapsState extends State<GoogleMaps> {
   final now = DateTime.now();
   double _currentZoom = 13.0;
   String? _darkMapStyle;
+  final dir = getApplicationDocumentsDirectory();
+  final fileformattedDate =
+      '${DateTime.now().year}${DateTime.now().month.toString().padLeft(2, '0')}${DateTime.now().day.toString().padLeft(2, '0')}';
 
 
   Set<Marker> _buildMarkers() {
@@ -97,7 +101,8 @@ class _GoogleMapsState extends State<GoogleMaps> {
 
   Future<void> _loadMarkersFromCSV() async {
     try {
-      final csvFilePath = "assets/baseData.csv";
+      final dir = await getApplicationDocumentsDirectory();
+      final csvFilePath = "${dir.path}/$fileformattedDate.csv";
       final coordinates = await readCoordinatesFromCSV(csvFilePath);
       print("Parsed coordinates from CSV: $coordinates"); // 데이터 파싱 확인을 위한 출력
       setState(() {

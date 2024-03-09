@@ -1,6 +1,8 @@
 import 'dart:core';
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
+import 'package:doitflutter/myPage.dart';
 import 'package:doitflutter/settingPage.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
@@ -19,6 +21,9 @@ import 'package:google_fonts/google_fonts.dart';
 
 
 
+
+
+
 class MyHomePage extends StatefulWidget {
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -31,14 +36,32 @@ class _MyHomePageState extends State<MyHomePage> {
   final LatLng _center = const LatLng(37.285172, 127.065014);
   late List<StoreInfo> todayStoreInfos = [];
 
+  final dir = getApplicationDocumentsDirectory();
+  final fileformattedDate =
+      '${DateTime.now().year}${DateTime.now().month.toString().padLeft(2, '0')}${DateTime.now().day.toString().padLeft(2, '0')}';
+
   @override
   void initState() {
     super.initState();
     _picker = ImagePicker();
-    _readStoreInfoFromCSV("assets/baseData.csv");
+    initPath();
   }
 
+  void initPath() async {
+    final dir = await getApplicationDocumentsDirectory();
+    final filePath = '${dir.path}/$fileformattedDate.csv';
+    // 파일 존재 여부 확인
+    while (!await File(filePath).exists()) {
+      await Future.delayed(Duration(seconds: 1));
+      print('파일이 존재하지 않습니다. 1초 후 다시 확인합니다.');
+    }
+
+    await _readStoreInfoFromCSV(filePath);
+  }
+
+
   Future<void> _readStoreInfoFromCSV(String filePath) async {
+    print('csv 불러오는 중');
     final csvContent = await rootBundle.loadString(filePath);
     final List<List<dynamic>> csvData = const CsvToListConverter().convert(csvContent);
     final List<List<dynamic>> coordinates = csvData.skip(1).toList();
@@ -71,6 +94,7 @@ class _MyHomePageState extends State<MyHomePage> {
         todayStoreInfos.add(storeInfo);
       }
     }
+    print('csv 불러오기 완료');
 
     setState(() {});
   }
@@ -88,7 +112,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // 시간
     final now = DateTime.now();
     DateTime twoDaysAgo = now.subtract(Duration(days: 2));
-    String formattedDate = DateFormat('yyyy.M.d').format(twoDaysAgo);
+    String sformattedDate = DateFormat('yyyy.M.d').format(twoDaysAgo);
 
     // 기기 대응
     double height, width;
@@ -152,7 +176,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const settingPage()),
+                      MaterialPageRoute(builder: (context) => const myPage()),
                     );
                   },
                 ),
@@ -273,7 +297,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Text('${formattedDate} 기준 신규 폐업 사업장 ', style: GoogleFonts.notoSans(fontSize: 18, color: Colors.white, fontWeight: FontWeight.w500), ),
+                          Text('${sformattedDate} 기준 신규 폐업 사업장 ', style: GoogleFonts.notoSans(fontSize: 18, color: Colors.white, fontWeight: FontWeight.w500), ),
                           Icon(Icons.store_rounded, size: 25,color: Colors.white),
                           Text(': ${todayStoreInfos.length}', style: GoogleFonts.notoSans(fontSize: 23, color: Colors.white, fontWeight: FontWeight.w500), )
                           // 오늘 날짜 기준 이틀 전의 데이터 개수로 대입

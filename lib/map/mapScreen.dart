@@ -15,6 +15,7 @@ import 'package:camera/camera.dart';
 import 'package:doitflutter/camera.dart';
 import 'package:path/path.dart' show join;
 import 'package:intl/intl.dart';
+import 'dart:io';
 
 class MyMapScreen extends StatefulWidget {
   const MyMapScreen({Key? key});
@@ -27,6 +28,9 @@ class _MyMapScreenState extends State<MyMapScreen> {
   String? get docId => '02cA590Y5VJmUMNhHHuj';
 
   late List<StoreInfo> storeInfos = [];
+  final dir = getApplicationDocumentsDirectory();
+  final fileformattedDate =
+      '${DateTime.now().year}${DateTime.now().month.toString().padLeft(2, '0')}${DateTime.now().day.toString().padLeft(2, '0')}';
 
   Future<List<List<dynamic>>> readCoordinatesFromCSV(String filePath) async {
     final csvContent = await rootBundle.loadString(filePath);
@@ -41,6 +45,8 @@ class _MyMapScreenState extends State<MyMapScreen> {
   late Future<void> _initializeControllerFuture;
   late ImagePicker _picker;
   XFile? _image;
+  late String _filePath = '';
+
 
 
   @override
@@ -48,8 +54,22 @@ class _MyMapScreenState extends State<MyMapScreen> {
     super.initState();
     _initializeCamera();
     _picker = ImagePicker();
-    _readStoreInfoFromCSV("assets/baseData.csv");
+    initPath();
   }
+
+  void initPath() async {
+    final dir = await getApplicationDocumentsDirectory();
+    _filePath = '${dir.path}/$fileformattedDate.csv';
+    final fileExists = await File(_filePath).exists();
+    if (fileExists) {
+      setState(() {}); // FutureBuilder를 갱신하기 위해 상태를 업데이트합니다.
+    } else {
+      print('파일이 존재하지 않습니다. 1초 후 다시 확인합니다.');
+      await Future.delayed(Duration(seconds: 1));
+    }
+    await _readStoreInfoFromCSV(_filePath);
+  }
+
 
 
 
@@ -173,7 +193,7 @@ class _MyMapScreenState extends State<MyMapScreen> {
                     top: true,
                     bottom: false,
                     child: FutureBuilder<List<List<dynamic>>>(
-                      future: readCoordinatesFromCSV("assets/baseData.csv"), // 여기에 파일 경로 입력
+                      future: readCoordinatesFromCSV(_filePath),// 여기에 파일 경로 입력
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.waiting) {
                           return const Center(child: CircularProgressIndicator());

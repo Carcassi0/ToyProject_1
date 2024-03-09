@@ -71,15 +71,15 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 controller: _emailController,
                 decoration: InputDecoration(
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Theme.of(context).colorScheme.primaryContainer ),
+                    borderSide: BorderSide(color: Theme.of(context).colorScheme.primary ),
                     borderRadius: BorderRadius.circular(20)
                   ),
                   focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Theme.of(context).colorScheme.primaryContainer ),
+                      borderSide: BorderSide(color: Theme.of(context).colorScheme.primary ),
                       borderRadius: BorderRadius.circular(20)
                   ),
                   hintText: 'Email', hintStyle: TextStyle(fontSize: 18),
-                  fillColor: Theme.of(context).colorScheme.primaryContainer,
+                  fillColor: Theme.of(context).colorScheme.primary,
                   filled: true
                 ),
               ),
@@ -89,7 +89,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
             MaterialButton(
               onPressed: passwordReset,
               child: Text('비밀번호 초기화',style: TextStyle(fontSize: 18),),
-              color: Theme.of(context).colorScheme.onPrimary
+              color: Theme.of(context).colorScheme.primaryContainer
             )
           ],
         ),
