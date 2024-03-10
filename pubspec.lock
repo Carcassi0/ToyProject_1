@@ -760,6 +760,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.1.2"
+  remedi_kopo:
+    dependency: "direct main"
+    description:
+      name: remedi_kopo
+      sha256: "6f1df613d795fb38726632a9df6c17adee06c662c271cd381f65e6a6f6610721"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.2"
   sanitize_html:
     dependency: transitive
     description:
@@ -909,6 +917,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.3.0"
+  webview_flutter:
+    dependency: transitive
+    description:
+      name: webview_flutter
+      sha256: "15900bc32e210fc5a87b08e65473c45ff4fa0ed707f05a84ea2547aaf1d2cfc7"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.14"
   win32:
     dependency: transitive
     description:

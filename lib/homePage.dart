@@ -19,6 +19,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' show join;
 import 'package:google_fonts/google_fonts.dart';
 
+import 'newLocationAdd.dart';
+
 
 
 
@@ -102,9 +104,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    List<String> menu = ['지도', '업무관리', '알림', '요약'];
+    List<String> menu = ['지도', '장소 추가', '알림', '요약'];
     List<IconData> menuIcon = [
-      Icons.map_rounded, Icons.list_rounded, Icons.notification_important_rounded, Icons.my_library_books_rounded
+      Icons.map_rounded, Icons.edit_location_alt_rounded, Icons.notification_important_rounded, Icons.my_library_books_rounded
     ];
 
     final user = FirebaseAuth.instance.currentUser!;
@@ -339,7 +341,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               }
                               if (index == 1) {
                                 Navigator.push(
-                                    context, MaterialPageRoute(builder: (context) => const csvPage()));
+                                    context, MaterialPageRoute(builder: (context) => const newLocationAdd()));
                               }
                               if (index == 2) {
                                 Navigator.push(
