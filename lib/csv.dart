@@ -67,3 +67,34 @@ class _GoogleMapsState extends State<GoogleMaps> {
     );
   }
 }
+
+// Future<void> _readStoreInfoFromCSV(String filePath) async {
+//   final csvContent = await rootBundle.loadString(filePath);
+//   final List<List<dynamic>> csvData = const CsvToListConverter().convert(csvContent);
+//   final List<List<dynamic>> coordinates = csvData.skip(1).toList();
+//
+//   for (final coordinate in coordinates) {
+//     final id = coordinate[0].toString();
+//     final closingDate = coordinate[1].toString();
+//     final name = coordinate[2].toString();
+//     final latitude = double.parse(coordinate[4].toString());
+//     final longitude = double.parse(coordinate[3].toString());
+//     final description = coordinate[5].toString();
+//
+//     final storeInfo = StoreInfo(
+//       id: id,
+//       closingDate: closingDate,
+//       name: name,
+//       latitude: latitude,
+//       longitude: longitude,
+//       description: description,
+//     );
+//
+//
+//     final markerPosition = LatLng(storeInfo.latitude, storeInfo.longitude);
+//     final distance = haversineDistance(_center, markerPosition);
+//
+//     if(distance<=1000){
+//       storeInfos.add(storeInfo);}
+//   }
+// }

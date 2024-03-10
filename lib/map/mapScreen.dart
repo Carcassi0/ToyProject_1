@@ -32,12 +32,6 @@ class _MyMapScreenState extends State<MyMapScreen> {
   final fileformattedDate =
       '${DateTime.now().year}${DateTime.now().month.toString().padLeft(2, '0')}${DateTime.now().day.toString().padLeft(2, '0')}';
 
-  Future<List<List<dynamic>>> readCoordinatesFromCSV(String filePath) async {
-    final csvContent = await rootBundle.loadString(filePath);
-    final List<List<dynamic>> csvData = const CsvToListConverter().convert(csvContent);
-    final List<List<dynamic>> coordinates = csvData.skip(1).toList();
-    return coordinates;
-  }
 
   final LatLng _center = const LatLng(37.285172, 127.065014);
   late CameraController _controller;
@@ -67,7 +61,8 @@ class _MyMapScreenState extends State<MyMapScreen> {
       print('파일이 존재하지 않습니다. 1초 후 다시 확인합니다.');
       await Future.delayed(Duration(seconds: 1));
     }
-    await _readStoreInfoFromCSV(_filePath);
+    await getStoreInfoFromFirestore();
+    setState(() {}); // 파일 가져온 이후에 상태 업데이트
   }
 
 
@@ -91,35 +86,32 @@ class _MyMapScreenState extends State<MyMapScreen> {
     _initializeControllerFuture = _controller.initialize();
   }
 
-  Future<void> _readStoreInfoFromCSV(String filePath) async {
-    final csvContent = await rootBundle.loadString(filePath);
-    final List<List<dynamic>> csvData = const CsvToListConverter().convert(csvContent);
-    final List<List<dynamic>> coordinates = csvData.skip(1).toList();
 
-    for (final coordinate in coordinates) {
-      final id = coordinate[0].toString();
-      final closingDate = coordinate[1].toString();
-      final name = coordinate[2].toString();
-      final latitude = double.parse(coordinate[4].toString());
-      final longitude = double.parse(coordinate[3].toString());
-      final description = coordinate[5].toString();
+  Future<void> getStoreInfoFromFirestore() async {
+    // Firestore 인스턴스 생성
+    final firestoreInstance = FirebaseFirestore.instance;
 
+    // storeInfo 컬렉션의 모든 문서 가져오기
+    final QuerySnapshot querySnapshot = await firestoreInstance.collection('storeInfo').get();
+
+    // 가져온 문서를 StoreInfo 객체로 변환하여 리스트에 저장
+    querySnapshot.docs.forEach((doc) {
+      final data = doc.data() as Map<String, dynamic>;
       final storeInfo = StoreInfo(
-        id: id,
-        closingDate: closingDate,
-        name: name,
-        latitude: latitude,
-        longitude: longitude,
-        description: description,
+        id: data['영업상태명'] as String? ?? '',
+        closingDate: data['폐업일자'] as String? ?? '',
+        name: data['사업장명'] as String? ?? '',
+        latitude: data['좌표정보(y)'] as double? ?? 0.0,
+        longitude: data['좌표정보(x)'] as double? ?? 0.0,
+        description: data['도로명전체주소'] as String? ?? '',
       );
-
 
       final markerPosition = LatLng(storeInfo.latitude, storeInfo.longitude);
       final distance = haversineDistance(_center, markerPosition);
-
-      if(distance<=1000){
-        storeInfos.add(storeInfo);}
-    }
+      if (distance <= 1000) {
+        storeInfos.add(storeInfo);
+      }
+    });
   }
 
 
@@ -192,23 +184,14 @@ class _MyMapScreenState extends State<MyMapScreen> {
                   child: SafeArea(
                     top: true,
                     bottom: false,
-                    child: FutureBuilder<List<List<dynamic>>>(
-                      future: readCoordinatesFromCSV(_filePath),// 여기에 파일 경로 입력
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
-                          return const Center(child: CircularProgressIndicator());
-                        } else if (snapshot.hasError) {
-                          return Center(child: Text('Error: ${snapshot.error}'));
-                        } else {
-                          final coordinates = snapshot.data!;
-                          return ListView.builder(
+                    child:
+                          ListView.builder(
                             controller: _scrollController,
                             itemCount: storeInfos.length,
                             itemBuilder: (BuildContext context, int index) {
                               final storeInfo = storeInfos[index];
                               final markerPosition = LatLng(storeInfo.latitude, storeInfo.longitude);
                               final distance = haversineDistance(_center, markerPosition);
-      
       
                               if(distance <= 1000) {
                                 return Card(
@@ -439,10 +422,8 @@ class _MyMapScreenState extends State<MyMapScreen> {
                               }
                               return SizedBox.shrink();
                             },
-                          );
-                        }
-                      },
-                    ),
+                          ),
+
                   ),
                 );
               },
