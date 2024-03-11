@@ -8,7 +8,8 @@ ThemeData lightmode = ThemeData(
     background: Colors.grey[300],
     // primary: Colors.deepPurple[200],
     secondary: Colors.deepPurple,
-    error: Colors.red
+    error: Colors.red,
+    outline: Colors.black
   )
 );
 
@@ -18,7 +19,8 @@ ThemeData darkmode = ThemeData(
   colorScheme: ColorScheme.dark(
     background: Colors.grey.shade900,
     primary: Colors.grey.shade700,
-    secondary: Colors.grey.shade900
+    secondary: Colors.grey.shade900,
+    outline: Colors.white
   )
 
 );

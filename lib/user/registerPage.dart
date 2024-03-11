@@ -105,8 +105,8 @@ class _RegisterPageState extends State<RegisterPage> {
               child: Container(
                 decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.onPrimary,
-                    border: Border.all(color: Theme.of(context).colorScheme.primaryContainer),
-                    borderRadius: BorderRadius.circular(20)
+                    borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: Theme.of(context).colorScheme.outline, width: 2),
                 ),
                 child: Padding(
                   padding: const EdgeInsets.only(left: 20.0),
@@ -129,8 +129,8 @@ class _RegisterPageState extends State<RegisterPage> {
               child: Container(
                 decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.onPrimary,
-                    border: Border.all(color: Theme.of(context).colorScheme.primaryContainer),
-                    borderRadius: BorderRadius.circular(20)
+                    borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: Theme.of(context).colorScheme.outline, width: 2,)
                 ),
                 child: Padding(
                   padding: const EdgeInsets.only(left: 20.0),
@@ -152,8 +152,8 @@ class _RegisterPageState extends State<RegisterPage> {
               child: Container(
                 decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.onPrimary,
-                    border: Border.all(color: Theme.of(context).colorScheme.primaryContainer),
-                    borderRadius: BorderRadius.circular(20)
+                    borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: Theme.of(context).colorScheme.outline, width: 2),
                 ),
                 child: Padding(
                   padding: const EdgeInsets.only(left: 20.0),
@@ -176,8 +176,8 @@ class _RegisterPageState extends State<RegisterPage> {
               child: Container(
                 decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.onPrimary,
-                    border: Border.all(color: Theme.of(context).colorScheme.primaryContainer),
-                    borderRadius: BorderRadius.circular(20)
+                    borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: Theme.of(context).colorScheme.outline, width: 2),
                 ),
                 child: Padding(
                   padding: const EdgeInsets.only(left: 20.0),
@@ -200,8 +200,8 @@ class _RegisterPageState extends State<RegisterPage> {
               child: Container(
                 decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.onPrimary,
-                    border: Border.all(color: Theme.of(context).colorScheme.primaryContainer),
-                    borderRadius: BorderRadius.circular(20)
+                    borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: Theme.of(context).colorScheme.outline, width: 2),
                 ),
                 child: Padding(
                   padding: const EdgeInsets.only(left: 20.0),
@@ -224,8 +224,8 @@ class _RegisterPageState extends State<RegisterPage> {
               child: Container(
                 decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.onPrimary,
-                    border: Border.all(color: Theme.of(context).colorScheme.primaryContainer),
-                    borderRadius: BorderRadius.circular(20)
+                    borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: Theme.of(context).colorScheme.outline, width: 2),
                 ),
                 child: Padding(
                   padding: const EdgeInsets.only(left: 20.0),
@@ -240,7 +240,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
               ),
             ),
-            SizedBox(height: 10),
+            SizedBox(height: 20),
 
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 25.0),

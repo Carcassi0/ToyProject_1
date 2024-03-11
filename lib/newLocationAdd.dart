@@ -146,7 +146,7 @@ class _newLocationAddState extends State<newLocationAdd> {
               child: Container(
                 decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.onPrimary,
-                    border: Border.all(color: Theme.of(context).colorScheme.primaryContainer),
+                    border: Border.all(color: Theme.of(context).colorScheme.onPrimaryContainer),
                     borderRadius: BorderRadius.circular(20)
                 ),
                 child: Padding(
@@ -169,7 +169,7 @@ class _newLocationAddState extends State<newLocationAdd> {
               child: Container(
                 decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.onPrimary,
-                    border: Border.all(color: Theme.of(context).colorScheme.primaryContainer),
+                    border: Border.all(color: Theme.of(context).colorScheme.onPrimaryContainer),
                     borderRadius: BorderRadius.circular(20)
                 ),
                 child: Padding(
@@ -199,7 +199,7 @@ class _newLocationAddState extends State<newLocationAdd> {
               child: Container(
                 decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.onPrimary,
-                    border: Border.all(color: Theme.of(context).colorScheme.primaryContainer),
+                    border: Border.all(color: Theme.of(context).colorScheme.onPrimaryContainer),
                     borderRadius: BorderRadius.circular(20)
                 ),
                 child: Padding(
@@ -223,7 +223,7 @@ class _newLocationAddState extends State<newLocationAdd> {
               child: Container(
                 decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.onPrimary,
-                    border: Border.all(color: Theme.of(context).colorScheme.primaryContainer),
+                    border: Border.all(color: Theme.of(context).colorScheme.onPrimaryContainer),
                     borderRadius: BorderRadius.circular(20)
                 ),
                 child: Padding(
@@ -248,8 +248,8 @@ class _newLocationAddState extends State<newLocationAdd> {
               child: Container(
                 decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.onPrimary,
-                    border: Border.all(color: Theme.of(context).colorScheme.primaryContainer),
-                    borderRadius: BorderRadius.circular(20)
+                    borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: Theme.of(context).colorScheme.onPrimaryContainer),
                 ),
                   child:
                   ToggleButtons(
@@ -257,7 +257,7 @@ class _newLocationAddState extends State<newLocationAdd> {
                       isSelected: isSelected,
                       selectedColor: Colors.white,
                       fillColor: Theme.of(context).colorScheme.primary,
-                      splashColor: Theme.of(context).colorScheme.onPrimaryContainer,
+                      splashColor: Theme.of(context).colorScheme.secondaryContainer,
                       textStyle: const TextStyle(fontWeight: FontWeight.bold),
                       borderRadius: BorderRadius.circular(20),
                       children: [
@@ -300,7 +300,8 @@ class _newLocationAddState extends State<newLocationAdd> {
                   padding: EdgeInsets.all(20),
                   decoration: BoxDecoration(color: Colors.black,
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: Theme.of(context).colorScheme.primaryContainer)),
+                    border: Border.all(color: Colors.black)),
+
                   child: Center(
                       child: Text('장소 추가',
                           style: TextStyle(

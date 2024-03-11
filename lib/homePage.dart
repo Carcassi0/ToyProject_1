@@ -106,7 +106,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     List<String> menu = ['지도', '장소 추가', '알림', '요약'];
     List<IconData> menuIcon = [
-      Icons.map_rounded, Icons.edit_location_alt_rounded, Icons.notification_important_rounded, Icons.my_library_books_rounded
+      Icons.map_outlined, Icons.edit_location_outlined, Icons.notification_important_outlined, Icons.my_library_books_outlined
     ];
 
     final user = FirebaseAuth.instance.currentUser!;
@@ -151,6 +151,7 @@ class _MyHomePageState extends State<MyHomePage> {
               padding: EdgeInsets.zero,
               children: <Widget>[
                 UserAccountsDrawerHeader(
+                  decoration: BoxDecoration(color: Theme.of(context).colorScheme.background),
                   accountName: FutureBuilder(
                     future: _getUserName(),
                     builder: (context, snapshot) {
@@ -161,7 +162,9 @@ class _MyHomePageState extends State<MyHomePage> {
                       } else {
                         return Text(
                             '사용자: ${snapshot.data} 님',
-                            style: GoogleFonts.notoSans(fontSize: 20, fontWeight: FontWeight.w500)
+                            style: GoogleFonts.notoSans(fontSize: 20,
+                                fontWeight: FontWeight.w500,
+                                color: Theme.of(context).colorScheme.onBackground)
                         );
                       }
                     },
@@ -170,7 +173,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
                 ),
                 ListTile(
-                  leading: Icon(Icons.person),
+                  leading: Icon(Icons.person_outline_rounded),
                   title: Text(
                       '마이페이지',
                       style: GoogleFonts.notoSans()
@@ -183,7 +186,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   },
                 ),
                 ListTile(
-                  leading: Icon(Icons.settings),
+                  leading: Icon(Icons.settings_outlined),
                   title: Text(
                       '설정',
                       style: GoogleFonts.notoSans()
@@ -235,7 +238,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: InkWell(
                       onTap: () => _scaffoldKey.currentState?.openDrawer(),
                       child: const Icon(
-                        Icons.menu_rounded,
+                        Icons.menu_outlined,
                         size: 45,
                       ),
                     ),
@@ -259,6 +262,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                   fontSize: width * 0.09,
                                   fontWeight: FontWeight.w500,
                                   letterSpacing: 1,
+                                    color: Theme.of(context).colorScheme.onBackground
                                 )
                               );
                             }
@@ -278,6 +282,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             fontSize: 19,
                             fontWeight: FontWeight.w400,
                             letterSpacing: 1,
+                              color: Theme.of(context).colorScheme.onBackground
                           )
                         )
                       ],
@@ -290,7 +295,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     padding: const EdgeInsets.all(14.0),
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.primary,
+                        color: Theme.of(context).colorScheme.background,
+                        border: Border.all(color: Theme.of(context).colorScheme.outline, width: 2),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       height: height * 0.07,
@@ -299,9 +305,16 @@ class _MyHomePageState extends State<MyHomePage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Text('${sformattedDate} 기준 신규 폐업 사업장 ', style: GoogleFonts.notoSans(fontSize: 18, color: Colors.white, fontWeight: FontWeight.w500), ),
-                          Icon(Icons.store_rounded, size: 25,color: Colors.white),
-                          Text(': ${todayStoreInfos.length}', style: GoogleFonts.notoSans(fontSize: 23, color: Colors.white, fontWeight: FontWeight.w500), )
+                          Text('${sformattedDate} 기준 신규 폐업 사업장 ',
+                            style: GoogleFonts.notoSans(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w500,
+                                color: Theme.of(context).colorScheme.onBackground), ),
+                          Icon(Icons.store_rounded, size: 25, color: Theme.of(context).colorScheme.onBackground),
+                          Text(': ${todayStoreInfos.length}',
+                            style: GoogleFonts.notoSans(
+                                fontSize: 23, fontWeight: FontWeight.w500,
+                                color: Theme.of(context).colorScheme.onBackground), )
                           // 오늘 날짜 기준 이틀 전의 데이터 개수로 대입
                         ],
                       ),
@@ -311,7 +324,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   SizedBox(height: height * 0.01),
 
                   Container(
-                    decoration: const BoxDecoration(
+                    decoration:  const BoxDecoration(
                       borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(30),
                         topRight: Radius.circular(30),
@@ -332,6 +345,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         itemCount: 4,
                         itemBuilder: (context, index) {
                           return InkWell(
+
                             onTap: () {
                               if (index == 0) {
                                 Navigator.push(
@@ -356,14 +370,15 @@ class _MyHomePageState extends State<MyHomePage> {
                               margin: const EdgeInsets.symmetric(vertical: 1, horizontal: 10),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(20),
-                                color: Theme.of(context).colorScheme.primary,
+                                border: Border.all(color: Theme.of(context).colorScheme.outline, width: 2),
+                                color: Theme.of(context).colorScheme.background,
                               ),
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                 children: [
-                                  Icon(menuIcon[index], size: 55, color: Colors.white,),
+                                  Icon(menuIcon[index], size: 55),
                                   Text(menu[index], style: GoogleFonts.notoSans(
-                                      fontSize: 20, fontWeight: FontWeight.w500, color: Colors.white)),
+                                      fontSize: 20, fontWeight: FontWeight.w500)),
                                 ],
                               ),
                             ),
