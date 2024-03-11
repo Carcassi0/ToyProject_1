@@ -12,6 +12,8 @@ class newLocationAdd extends StatefulWidget {
     Key? key,
   }) : super(key: key);
 
+
+
   @override
   State<newLocationAdd> createState() => _newLocationAddState();
 }
@@ -27,6 +29,9 @@ class _newLocationAddState extends State<newLocationAdd> {
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   Map<String, String> formData = {};
+  List<bool> isSelected = [true, false, false];
+
+  DateTime _dateTime = DateTime.now();
 
 
   @override
@@ -54,9 +59,9 @@ class _newLocationAddState extends State<newLocationAdd> {
         // 유저 정보
         addUserDetails(
             _nameController.text.trim(),
-            _closedDateController.text.trim(),
+            _addressController.text.trim(),
             _detailAddresslController.text.trim(),
-            _storeStateController.text.trim()
+            _closedDateController.text.trim(),
         );
       }
     } on FirebaseAuthException catch  (e) {
@@ -65,12 +70,13 @@ class _newLocationAddState extends State<newLocationAdd> {
     }
   }
 
-  Future addUserDetails(String firstName, String lastName, String email, String storecode) async {
-    await FirebaseFirestore.instance.collection('users').add({
-      'first name': firstName ,
-      'last name': lastName,
-      'email': email,
-      'store code': int.tryParse(storecode)
+  Future addUserDetails(String storeName, String address, String detailAddress, String closedDate) async {
+    await FirebaseFirestore.instance.collection('storeInfo').add({
+
+      '도로명전체주소': address+' ('+detailAddress+')',
+      '사업장명': storeName,
+      '폐업일자': closedDate,
+
     });
   }
 
@@ -98,6 +104,19 @@ class _newLocationAddState extends State<newLocationAdd> {
       formData['address'] = address;
     }
   }
+  void _showDatePicker(){
+    showDatePicker(context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime(2000),
+        lastDate: DateTime(2030)
+    ).then((value) {
+      setState(() {
+        _dateTime = value!;
+      });
+    });
+  }
+
+
 
   @override
 
@@ -126,7 +145,7 @@ class _newLocationAddState extends State<newLocationAdd> {
               padding: const EdgeInsets.symmetric(horizontal: 25.0),
               child: Container(
                 decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primaryContainer,
+                    color: Theme.of(context).colorScheme.onPrimary,
                     border: Border.all(color: Theme.of(context).colorScheme.primaryContainer),
                     borderRadius: BorderRadius.circular(20)
                 ),
@@ -149,7 +168,7 @@ class _newLocationAddState extends State<newLocationAdd> {
               padding: const EdgeInsets.symmetric(horizontal: 25.0),
               child: Container(
                 decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primaryContainer,
+                    color: Theme.of(context).colorScheme.onPrimary,
                     border: Border.all(color: Theme.of(context).colorScheme.primaryContainer),
                     borderRadius: BorderRadius.circular(20)
                 ),
@@ -179,7 +198,7 @@ class _newLocationAddState extends State<newLocationAdd> {
               padding: const EdgeInsets.symmetric(horizontal: 25.0),
               child: Container(
                 decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primaryContainer,
+                    color: Theme.of(context).colorScheme.onPrimary,
                     border: Border.all(color: Theme.of(context).colorScheme.primaryContainer),
                     borderRadius: BorderRadius.circular(20)
                 ),
@@ -203,13 +222,15 @@ class _newLocationAddState extends State<newLocationAdd> {
               padding: const EdgeInsets.symmetric(horizontal: 25.0),
               child: Container(
                 decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primaryContainer,
+                    color: Theme.of(context).colorScheme.onPrimary,
                     border: Border.all(color: Theme.of(context).colorScheme.primaryContainer),
                     borderRadius: BorderRadius.circular(20)
                 ),
                 child: Padding(
                   padding: const EdgeInsets.only(left: 20.0),
                   child: TextField(
+                    onTap: _showDatePicker,
+                    readOnly: true,
                     controller: _closedDateController,
                     decoration: InputDecoration(
                       border: InputBorder.none,
@@ -220,37 +241,56 @@ class _newLocationAddState extends State<newLocationAdd> {
               ),
             ),
 
-            SizedBox(height: 10),
+            SizedBox(height: 20),
 
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 25.0),
               child: Container(
                 decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primaryContainer,
+                    color: Theme.of(context).colorScheme.onPrimary,
                     border: Border.all(color: Theme.of(context).colorScheme.primaryContainer),
                     borderRadius: BorderRadius.circular(20)
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: const [
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 12),
-                      child: Text('신축', style: TextStyle(fontSize: 18)),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 12),
-                      child: Text('폐업', style: TextStyle(fontSize: 18)),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 12),
-                      child: Text('휴업', style: TextStyle(fontSize: 18)),
-                    ),
-                  ],
-                ),
+                  child:
+                  ToggleButtons(
+                      renderBorder: false,
+                      isSelected: isSelected,
+                      selectedColor: Colors.white,
+                      fillColor: Theme.of(context).colorScheme.primary,
+                      splashColor: Theme.of(context).colorScheme.onPrimaryContainer,
+                      textStyle: const TextStyle(fontWeight: FontWeight.bold),
+                      borderRadius: BorderRadius.circular(20),
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 41),
+                          child: Text('신축', style: GoogleFonts.notoSans(fontSize: 18)),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 41),
+                          child: Text('폐업', style: GoogleFonts.notoSans(fontSize: 18)),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 41),
+                          child: Text('휴업', style: GoogleFonts.notoSans(fontSize: 18)),
+                        ),
+                      ],
+                      onPressed: (int newIndex) {
+                        setState(() {
+                      // looping through the list of booleans values
+                      for (int index = 0; index < isSelected.length; index++) {
+                        if (index == newIndex) {
+                          isSelected[index] = true;
+                        } else {
+                          // other two will be set to false and not selected
+                          isSelected[index] = false;
+                        }
+                      }
+                    });
+                  })
               ),
             ),
 
-            SizedBox(height: 10),
+            SizedBox(height: 30),
 
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 25.0),
@@ -258,12 +298,14 @@ class _newLocationAddState extends State<newLocationAdd> {
                 onTap: signUp,
                 child: Container(
                   padding: EdgeInsets.all(20),
-                  decoration: BoxDecoration(color: Theme.of(context).colorScheme.onPrimary,
-                      borderRadius: BorderRadius.circular(20)),
+                  decoration: BoxDecoration(color: Colors.black,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: Theme.of(context).colorScheme.primaryContainer)),
                   child: Center(
                       child: Text('장소 추가',
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
+                              color: Colors.white,
                               fontSize: 18)
                       )
                   ),

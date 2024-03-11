@@ -104,7 +104,7 @@ class _RegisterPageState extends State<RegisterPage> {
               padding: const EdgeInsets.symmetric(horizontal: 25.0),
               child: Container(
                 decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primaryContainer,
+                    color: Theme.of(context).colorScheme.onPrimary,
                     border: Border.all(color: Theme.of(context).colorScheme.primaryContainer),
                     borderRadius: BorderRadius.circular(20)
                 ),
@@ -128,7 +128,7 @@ class _RegisterPageState extends State<RegisterPage> {
               padding: const EdgeInsets.symmetric(horizontal: 25.0),
               child: Container(
                 decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primaryContainer,
+                    color: Theme.of(context).colorScheme.onPrimary,
                     border: Border.all(color: Theme.of(context).colorScheme.primaryContainer),
                     borderRadius: BorderRadius.circular(20)
                 ),
@@ -151,7 +151,7 @@ class _RegisterPageState extends State<RegisterPage> {
               padding: const EdgeInsets.symmetric(horizontal: 25.0),
               child: Container(
                 decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primaryContainer,
+                    color: Theme.of(context).colorScheme.onPrimary,
                     border: Border.all(color: Theme.of(context).colorScheme.primaryContainer),
                     borderRadius: BorderRadius.circular(20)
                 ),
@@ -175,7 +175,7 @@ class _RegisterPageState extends State<RegisterPage> {
               padding: const EdgeInsets.symmetric(horizontal: 25.0),
               child: Container(
                 decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primaryContainer,
+                    color: Theme.of(context).colorScheme.onPrimary,
                     border: Border.all(color: Theme.of(context).colorScheme.primaryContainer),
                     borderRadius: BorderRadius.circular(20)
                 ),
@@ -199,7 +199,7 @@ class _RegisterPageState extends State<RegisterPage> {
               padding: const EdgeInsets.symmetric(horizontal: 25.0),
               child: Container(
                 decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primaryContainer,
+                    color: Theme.of(context).colorScheme.onPrimary,
                     border: Border.all(color: Theme.of(context).colorScheme.primaryContainer),
                     borderRadius: BorderRadius.circular(20)
                 ),
@@ -223,7 +223,7 @@ class _RegisterPageState extends State<RegisterPage> {
               padding: const EdgeInsets.symmetric(horizontal: 25.0),
               child: Container(
                 decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primaryContainer,
+                    color: Theme.of(context).colorScheme.onPrimary,
                     border: Border.all(color: Theme.of(context).colorScheme.primaryContainer),
                     borderRadius: BorderRadius.circular(20)
                 ),
@@ -248,11 +248,12 @@ class _RegisterPageState extends State<RegisterPage> {
                 onTap: signUp,
                 child: Container(
                   padding: EdgeInsets.all(20),
-                  decoration: BoxDecoration(color: Theme.of(context).colorScheme.onPrimary,
+                  decoration: BoxDecoration(color: Colors.black,
                       borderRadius: BorderRadius.circular(20)),
                   child: Center(
                       child: Text('회원가입',
                           style: TextStyle(
+                            color: Colors.white,
                               fontWeight: FontWeight.bold,
                               fontSize: 18)
                       )

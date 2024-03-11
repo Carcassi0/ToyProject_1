@@ -6,7 +6,7 @@ ThemeData lightmode = ThemeData(
   colorScheme: ColorScheme.fromSeed(
     seedColor: Colors.deepPurple.shade300,
     background: Colors.grey[300],
-    primary: Colors.deepPurple[200],
+    // primary: Colors.deepPurple[200],
     secondary: Colors.deepPurple,
     error: Colors.red
   )

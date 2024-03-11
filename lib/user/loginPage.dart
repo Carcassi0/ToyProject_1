@@ -51,9 +51,9 @@ class _loginPageState extends State<loginPage> {
               padding: const EdgeInsets.symmetric(horizontal: 25.0),
               child: Container(
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primaryContainer,
-
-                  borderRadius: BorderRadius.circular(20)
+                    color: Theme.of(context).colorScheme.onPrimary,
+                    border: Border.all(color: Theme.of(context).colorScheme.primaryContainer),
+                    borderRadius: BorderRadius.circular(20)
                 ),
                 child: Padding(
                   padding: const EdgeInsets.only(left: 20.0),
@@ -74,7 +74,8 @@ class _loginPageState extends State<loginPage> {
               padding: const EdgeInsets.symmetric(horizontal: 25.0),
               child: Container(
                 decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primaryContainer,
+                    color: Theme.of(context).colorScheme.onPrimary,
+                    border: Border.all(color: Theme.of(context).colorScheme.primaryContainer),
                     borderRadius: BorderRadius.circular(20)
                 ),
                 child: Padding(
@@ -118,13 +119,16 @@ class _loginPageState extends State<loginPage> {
               child: GestureDetector(
                 onTap: signIn,
                 child: Container(
-                  padding: EdgeInsets.all(20),
-                  decoration: BoxDecoration(color: Theme.of(context).colorScheme.onPrimary,
-                  borderRadius: BorderRadius.circular(20)),
+                    padding: EdgeInsets.all(20),
+                    decoration: BoxDecoration(color: Colors.black,
+                      border: Border.all(color: Theme.of(context).colorScheme.primaryContainer),
+                        borderRadius: BorderRadius.circular(20)),
+
                   child: Center(
                     child: Text('로 그 인',
                     style: TextStyle(
                     fontWeight: FontWeight.bold,
+                    color: Colors.white,
                     fontSize: 20)
                     )
                   ),
