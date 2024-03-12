@@ -28,7 +28,6 @@ class _MyMapScreenState extends State<MyMapScreen> {
   String? get docId => '02cA590Y5VJmUMNhHHuj';
 
   late List<StoreInfo> storeInfos = [];
-  final dir = getApplicationDocumentsDirectory();
   final fileformattedDate =
       '${DateTime.now().year}${DateTime.now().month.toString().padLeft(2, '0')}${DateTime.now().day.toString().padLeft(2, '0')}';
 
@@ -52,15 +51,6 @@ class _MyMapScreenState extends State<MyMapScreen> {
   }
 
   void initPath() async {
-    final dir = await getApplicationDocumentsDirectory();
-    _filePath = '${dir.path}/$fileformattedDate.csv';
-    final fileExists = await File(_filePath).exists();
-    if (fileExists) {
-      setState(() {}); // FutureBuilder를 갱신하기 위해 상태를 업데이트합니다.
-    } else {
-      print('파일이 존재하지 않습니다. 1초 후 다시 확인합니다.');
-      await Future.delayed(Duration(seconds: 1));
-    }
     await getStoreInfoFromFirestore();
     setState(() {}); // 파일 가져온 이후에 상태 업데이트
   }
@@ -177,8 +167,9 @@ class _MyMapScreenState extends State<MyMapScreen> {
               builder: (BuildContext context, ScrollController scrollController) {
                 return Container(
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primaryContainer,
+                    color: Theme.of(context).colorScheme.background,
                     borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: Theme.of(context).colorScheme.outline, width: 2),
       
                   ),
                   child: SafeArea(

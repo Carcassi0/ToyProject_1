@@ -18,7 +18,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' show join;
 import 'package:google_fonts/google_fonts.dart';
-
 import 'newLocationAdd.dart';
 
 
@@ -36,7 +35,7 @@ class _MyHomePageState extends State<MyHomePage> {
   late ImagePicker _picker = ImagePicker();
   XFile? _image;
   final LatLng _center = const LatLng(37.285172, 127.065014);
-  late List<StoreInfo> todayStoreInfos = [];
+  late List<todayStoreInfo> todayStoreInfos = [];
 
   final dir = getApplicationDocumentsDirectory();
   final fileformattedDate =
@@ -50,54 +49,33 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void initPath() async {
-    final dir = await getApplicationDocumentsDirectory();
-    final filePath = '${dir.path}/$fileformattedDate.csv';
-    // 파일 존재 여부 확인
-    while (!await File(filePath).exists()) {
-      await Future.delayed(Duration(seconds: 1));
-      print('파일이 존재하지 않습니다. 1초 후 다시 확인합니다.');
-    }
-
-    await _readStoreInfoFromCSV(filePath);
+    await getTodayStoreInfoFromFirestore();
+    setState(() {}); // 파일 가져온 이후에 상태 업데이트
   }
 
 
-  Future<void> _readStoreInfoFromCSV(String filePath) async {
-    print('csv 불러오는 중');
-    final csvContent = await rootBundle.loadString(filePath);
-    final List<List<dynamic>> csvData = const CsvToListConverter().convert(csvContent);
-    final List<List<dynamic>> coordinates = csvData.skip(1).toList();
-    final now = DateTime.now();
-    DateTime twoDaysAgo = now.subtract(Duration(days: 2));
-    String formattedDate = DateFormat('yyyy.M.d').format(twoDaysAgo);
+  Future<void> getTodayStoreInfoFromFirestore() async {
+    // Firestore 인스턴스 생성
+    final firestoreInstance = FirebaseFirestore.instance;
 
-    for (final coordinate in coordinates) {
-      final id = coordinate[0].toString();
-      final closingDate = coordinate[1].toString();
-      final name = coordinate[2].toString();
-      final latitude = double.parse(coordinate[4].toString());
-      final longitude = double.parse(coordinate[3].toString());
-      final description = coordinate[5].toString();
+    // storeInfo 컬렉션의 모든 문서 가져오기
+    final QuerySnapshot querySnapshot = await firestoreInstance.collection('storeInfo').get();
 
-      final storeInfo = StoreInfo(
-        id: id,
-        closingDate: closingDate,
-        name: name,
-        latitude: latitude,
-        longitude: longitude,
-        description: description,
+    // 가져온 문서를 StoreInfo 객체로 변환하여 리스트에 저장
+    querySnapshot.docs.forEach((doc) {
+      final data = doc.data() as Map<String, dynamic>;
+      final TodayStoreInfo = todayStoreInfo(
+        closingDate: data['폐업일자'] as String? ?? '',
+        latitude: data['좌표정보(y)'] as double? ?? 0.0,
+        longitude: data['좌표정보(x)'] as double? ?? 0.0,
       );
 
-
-      final markerPosition = LatLng(storeInfo.latitude, storeInfo.longitude);
+      final markerPosition = LatLng(TodayStoreInfo.latitude, TodayStoreInfo.longitude);
       final distance = haversineDistance(_center, markerPosition);
-
-      if(distance<=1000 && closingDate == formattedDate){
-        todayStoreInfos.add(storeInfo);
+      if (distance <= 1000) {
+        todayStoreInfos.add(TodayStoreInfo);
       }
-    }
-    print('csv 불러오기 완료');
-
+    });
     setState(() {});
   }
 
@@ -169,7 +147,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       }
                     },
                   ),
-                  accountEmail: null, // 이메일 주소가 없는 경우 null을 전달합니다.
+                  accountEmail: null, // 이메일 주소가 없는 경우 null을 전달합니다드.
 
                 ),
                 ListTile(
@@ -458,6 +436,18 @@ class _csvPageState extends State<csvPage> {
       ),
     );
   }
+}
+
+class todayStoreInfo {
+  final String closingDate;
+  final double latitude;
+  final double longitude;
+
+  todayStoreInfo({
+    required this.closingDate,
+    required this.latitude,
+    required this.longitude,
+  });
 }
 
 

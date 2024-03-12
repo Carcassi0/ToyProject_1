@@ -146,7 +146,7 @@ class _newLocationAddState extends State<newLocationAdd> {
               child: Container(
                 decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.onPrimary,
-                    border: Border.all(color: Theme.of(context).colorScheme.onPrimaryContainer),
+                    border: Border.all(color: Theme.of(context).colorScheme.outline, width: 2),
                     borderRadius: BorderRadius.circular(20)
                 ),
                 child: Padding(
@@ -169,7 +169,7 @@ class _newLocationAddState extends State<newLocationAdd> {
               child: Container(
                 decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.onPrimary,
-                    border: Border.all(color: Theme.of(context).colorScheme.onPrimaryContainer),
+                    border: Border.all(color: Theme.of(context).colorScheme.outline, width: 2),
                     borderRadius: BorderRadius.circular(20)
                 ),
                 child: Padding(
@@ -199,7 +199,7 @@ class _newLocationAddState extends State<newLocationAdd> {
               child: Container(
                 decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.onPrimary,
-                    border: Border.all(color: Theme.of(context).colorScheme.onPrimaryContainer),
+                    border: Border.all(color: Theme.of(context).colorScheme.outline, width: 2),
                     borderRadius: BorderRadius.circular(20)
                 ),
                 child: Padding(
@@ -223,7 +223,7 @@ class _newLocationAddState extends State<newLocationAdd> {
               child: Container(
                 decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.onPrimary,
-                    border: Border.all(color: Theme.of(context).colorScheme.onPrimaryContainer),
+                    border: Border.all(color: Theme.of(context).colorScheme.outline, width: 2),
                     borderRadius: BorderRadius.circular(20)
                 ),
                 child: Padding(
@@ -241,7 +241,7 @@ class _newLocationAddState extends State<newLocationAdd> {
               ),
             ),
 
-            SizedBox(height: 20),
+            SizedBox(height: 10),
 
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 25.0),
@@ -249,17 +249,17 @@ class _newLocationAddState extends State<newLocationAdd> {
                 decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.onPrimary,
                     borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Theme.of(context).colorScheme.onPrimaryContainer),
+                  border: Border.all(color: Theme.of(context).colorScheme.outline, width: 1.7),
                 ),
                   child:
                   ToggleButtons(
                       renderBorder: false,
                       isSelected: isSelected,
                       selectedColor: Colors.white,
-                      fillColor: Theme.of(context).colorScheme.primary,
-                      splashColor: Theme.of(context).colorScheme.secondaryContainer,
+                      fillColor: Theme.of(context).colorScheme.outline,
+                      splashColor: Theme.of(context).colorScheme.background,
                       textStyle: const TextStyle(fontWeight: FontWeight.bold),
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(19),
                       children: [
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: 41),

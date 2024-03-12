@@ -45,7 +45,7 @@ class _loginPageState extends State<loginPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.lock_outline_rounded, size: 150,),
+            Icon(Icons.lock_outline, size: 150 ),
             SizedBox(height: 80),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 25.0),

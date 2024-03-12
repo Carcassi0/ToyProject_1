@@ -214,8 +214,10 @@ class _GoogleMapsState extends State<GoogleMaps> {
         ),
           Positioned(
             top: height*0.1,right: width*0.06,
-            child: FloatingActionButton(onPressed: (){_locateUser();},
-            child: Icon(Icons.location_searching_rounded, size: 30,)),
+            child: FloatingActionButton(
+                backgroundColor: Theme.of(context).colorScheme.background,
+                onPressed: (){_locateUser();},
+            child: Icon(Icons.location_searching_outlined, size: 30)),
           )
       ]
       ),

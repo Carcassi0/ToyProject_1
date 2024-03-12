@@ -71,11 +71,11 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 controller: _emailController,
                 decoration: InputDecoration(
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Theme.of(context).colorScheme.outline ),
+                    borderSide: BorderSide(color: Theme.of(context).colorScheme.outline, width: 2),
                     borderRadius: BorderRadius.circular(20)
                   ),
                   focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Theme.of(context).colorScheme.outline ),
+                      borderSide: BorderSide(color: Theme.of(context).colorScheme.outline, width: 2),
                       borderRadius: BorderRadius.circular(20)
                   ),
                   hintText: 'Email', hintStyle: TextStyle(fontSize: 18),
