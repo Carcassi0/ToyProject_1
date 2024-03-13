@@ -1,5 +1,7 @@
 
 import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:doitflutter/homePage.dart';
 import 'package:doitflutter/menuPopOver.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
@@ -35,7 +37,6 @@ class _GoogleMapsState extends State<GoogleMaps> {
   final now = DateTime.now();
   double _currentZoom = 13.0;
   String? _darkMapStyle;
-  final dir = getApplicationDocumentsDirectory();
   final fileformattedDate =
       '${DateTime.now().year}${DateTime.now().month.toString().padLeft(2, '0')}${DateTime.now().day.toString().padLeft(2, '0')}';
 
@@ -73,7 +74,7 @@ class _GoogleMapsState extends State<GoogleMaps> {
 
   int calculateDays(String dateString) {
     // 주어진 문자열 형식의 날짜를 DateTime 객체로 변환
-    List<String> dateParts = dateString.split('.');
+    List<String> dateParts = dateString.split('-');
     DateTime specifiedDate = DateTime(int.parse(dateParts[0]), int.parse(dateParts[1]), int.parse(dateParts[2]));
 
     DateTime today = DateTime.now();
@@ -83,6 +84,14 @@ class _GoogleMapsState extends State<GoogleMaps> {
     // 일 수 반환
     return difference.inDays;
   }
+  // List<String> dateParts = dateString.split('-'); 에서 에러 발생한 이유.....
+  // 파이어스토어는 날짜 형식을 저장할 때 일반적으로 ISO 8601 형식을 사용합니다. 이 형식은 "YYYY-MM-DD"로 표현됩니다.
+  // 따라서 파이어스토어에 데이터를 업로드할 때 "2024.2.29"와 같은 형식은 자동으로 ISO 8601 형식으로 변환됩니다.
+  // 이렇게 함으로써 데이터의 일관성과 통일성을 유지할 수 있습니다.
+
+  // 따라서 Reffi 앱을 통해 파이어스토어에 업로드할 때 날짜 형식이 자동으로 변환된 것입니다.
+  // 만약 특정 형식으로 날짜를 저장하고 싶다면, 데이터를 업로드하기 전에 날짜 형식을 해당 형식으로 변환하여야 합니다.
+  // 이렇게 하면 파이어스토어에서 자동으로 형식을 변환하지 않습니다.
 
 
 
@@ -101,30 +110,26 @@ class _GoogleMapsState extends State<GoogleMaps> {
 
   Future<void> _loadMarkersFromCSV() async {
     try {
-      final dir = await getApplicationDocumentsDirectory();
-      final csvFilePath = "${dir.path}/$fileformattedDate.csv";
-      final coordinates = await readCoordinatesFromCSV(csvFilePath);
-      print("Parsed coordinates from CSV: $coordinates"); // 데이터 파싱 확인을 위한 출력
       setState(() {
         //_markers.clear();
         _circles.clear();
-        for (final coord in coordinates) {
-          final markerPosition = LatLng(coord[4],coord[3]);
+        for (final coord in widget.storeInfos) {
+          final markerPosition = LatLng(coord.latitude, coord.longitude);
           final distance = haversineDistance(_center, markerPosition);
           if (distance <= 1000) {
             final marker = Marker(
               onTap: (){
-                final storeId = '${coord[2].toString()}'; // 마커에 대한 고유한 식별자 (storeInfos의 id와 동일해야 함)
+                final storeId = '${coord.name.toString()}'; // 마커에 대한 고유한 식별자 (storeInfos의 id와 동일해야 함)
                 widget.scrollToItem(storeId);
               },
-              markerId: MarkerId(coord[2].toString()),
+              markerId: MarkerId(coord.name.toString()),
               position: markerPosition,
               infoWindow: InfoWindow(
-                title: coord[2].toString(),
-                snippet: "폐업일자:${coord[1].toString()}\n${coord[5].toString()}",
+                title: coord.name.toString(),
+                snippet: "폐업일자:${coord.closingDate.toString()}\n${coord.description.toString()}",
               ),
               visible: true,
-              icon: getMarkerIcon(calculateDays(coord[1]))//BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+              icon: getMarkerIcon(calculateDays(coord.closingDate.toString()))//BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
             );
             _markers.add(marker);
             print("Added marker: $marker"); // 마커 추가 확인을 위한 출력
@@ -143,16 +148,6 @@ class _GoogleMapsState extends State<GoogleMaps> {
       print("Error loading markers: $e");
     }
   }
-
-
-
-  Future<List<List<dynamic>>> readCoordinatesFromCSV(String filePath) async {
-    final csvContent = await rootBundle.loadString(filePath);
-    final List<List<dynamic>> csvData = const CsvToListConverter().convert(csvContent);
-    final List<List<dynamic>> coordinates = csvData.skip(1).toList();
-    return coordinates;
-  }
-
 
   double haversineDistance(LatLng p1, LatLng p2) {
     const radiusEarth = 6371.0; // 지구의 반지름 (킬로미터 단위)
