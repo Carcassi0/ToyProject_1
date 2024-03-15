@@ -1,9 +1,6 @@
 
 import 'dart:async';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:doitflutter/homePage.dart';
-import 'package:doitflutter/menuPopOver.dart';
-import 'package:path_provider/path_provider.dart';
+
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -14,7 +11,6 @@ import 'package:csv/csv.dart';
 import 'dart:math' show asin, cos, pi, pow, sin, sqrt;
 import '../theme/themeProvider.dart';
 import 'package:location/location.dart';
-import 'package:popover/popover.dart';
 import 'mapScreen.dart';
 
 
@@ -210,9 +206,13 @@ class _GoogleMapsState extends State<GoogleMaps> {
           Positioned(
             top: height*0.1,right: width*0.06,
             child: FloatingActionButton(
+                shape: RoundedRectangleBorder(
+                    side: BorderSide(color: Theme.of(context).colorScheme.outline, width: 2),
+                    borderRadius: BorderRadius.all(Radius.circular(20))
+                ),
                 backgroundColor: Theme.of(context).colorScheme.background,
                 onPressed: (){_locateUser();},
-            child: Icon(Icons.location_searching_outlined, size: 30)),
+            child: Icon(Icons.location_searching_outlined, size: 30, color: Theme.of(context).colorScheme.outline,)),
           )
       ]
       ),

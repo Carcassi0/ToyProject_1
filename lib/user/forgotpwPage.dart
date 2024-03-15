@@ -2,6 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'displayMessageToUser.dart';
+
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({Key? key}): super(key: key);
 
@@ -24,29 +26,34 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
   Future passwordReset() async {
     try {
+
+      showDialog(
+        context: context,
+        barrierDismissible: false, // Ensure dialog cannot be dismissed by tapping outside
+        builder: (context) {
+          return Center(child: CircularProgressIndicator());
+        },
+      );
+
       if(UserCredential == null){
         showDialog(context: context, builder: (context) {
           return AlertDialog(
-            content: Text('This Email is not registered'),
+            content: Text('해당 이메일로 가입된 유저가 존재하지 않습니다'),
           );
         });
-        return;
+
+        Navigator.pop(context);
       }
       await FirebaseAuth.instance.sendPasswordResetEmail(email: _emailController.text.trim());
       showDialog(context: context, builder: (context){
         return AlertDialog(
-          content: Text('Password reset link sent. Check your email'),
+          content: Text('비밀번호 재설정을 위한 이메일이 발송되었습니다'),
         );
       },
       );
     } on FirebaseAuthException catch (e) {
-      print(e);
-      showDialog(context: context, builder: (context){
-        return AlertDialog(
-          content: Text(e.message.toString()),
-        );
-      }
-      );
+      Navigator.pop(context);
+      displayMessageToUser(e.code, context);
     }
   }
 

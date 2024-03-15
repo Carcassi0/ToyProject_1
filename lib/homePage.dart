@@ -1,13 +1,11 @@
 import 'dart:core';
 import 'dart:async';
-import 'dart:io';
 import 'dart:math';
 import 'package:doitflutter/myPage.dart';
 import 'package:doitflutter/settingPage.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
-import 'camera.dart';
 import 'map/mapScreen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -70,9 +68,14 @@ class _MyHomePageState extends State<MyHomePage> {
         longitude: data['좌표정보(x)'] as double? ?? 0.0,
       );
 
+      DateTime now = DateTime.now();
+      DateTime twoDaysAgo = now.subtract(Duration(days: 2));
+
+      String formattedTwoDaysAgo = '${twoDaysAgo.year}-${twoDaysAgo.month.toString().padLeft(2, '0')}-${twoDaysAgo.day.toString().padLeft(2, '0')}';
+
       final markerPosition = LatLng(TodayStoreInfo.latitude, TodayStoreInfo.longitude);
       final distance = haversineDistance(_center, markerPosition);
-      if (distance <= 1000) {
+      if (distance <= 1000 && TodayStoreInfo.closingDate == formattedTwoDaysAgo) {
         todayStoreInfos.add(TodayStoreInfo);
       }
     });
@@ -336,13 +339,30 @@ class _MyHomePageState extends State<MyHomePage> {
                                     context, MaterialPageRoute(builder: (context) => const newLocationAdd()));
                               }
                               if (index == 2) {
-                                Navigator.push(
-                                    context, MaterialPageRoute(builder: (context) => const csvPage()));
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      backgroundColor: Theme.of(context).colorScheme.background,
+                                      title: Text("알림"),
+                                      content: Text("추가 예정 기능입니다."),
+                                    );
+                                  },
+                                );
                               }
                               if (index == 3) {
-                                Navigator.push(
-                                    context, MaterialPageRoute(builder: (context) => const csvPage()));
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      backgroundColor: Theme.of(context).colorScheme.background,
+                                      title: Text("알림"),
+                                      content: Text("추가 예정 기능입니다."),
+                                    );
+                                  },
+                                );
                               }
+
                             },
                             child: Container(
                               margin: const EdgeInsets.symmetric(vertical: 1, horizontal: 10),

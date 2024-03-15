@@ -4,10 +4,8 @@ ThemeData lightmode = ThemeData(
   useMaterial3: true,
   brightness: Brightness.light,
   colorScheme: ColorScheme.fromSeed(
-    seedColor: Colors.deepPurple.shade300,
+    seedColor: Colors.grey.shade300,
     background: Colors.grey[300],
-    // primary: Colors.deepPurple[200],
-    secondary: Colors.deepPurple,
     error: Colors.red,
     outline: Colors.black
   )

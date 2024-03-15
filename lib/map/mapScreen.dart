@@ -115,7 +115,15 @@ class _MyMapScreenState extends State<MyMapScreen> {
           doc.reference.delete();
         });
       });
-      Navigator.pop(context);// 이미지 삭제 후 현재 화면을 닫습니다.
+      Navigator.pop(context);
+      Navigator.pop(context);
+      showDialog(context: context, builder: (builder) => AlertDialog(
+        title: Text('알림', style: GoogleFonts.notoSans(fontSize: 16),),
+        content: Text('사진이 삭제되었습니다',style: GoogleFonts.notoSans(fontSize: 13)),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(20))
+        ),
+      ));
     } catch (error) {
       showDialog(
         context: context,
@@ -142,7 +150,7 @@ class _MyMapScreenState extends State<MyMapScreen> {
       final storeInfo = storeInfos.firstWhere((info) => info.name == storeId);
       final index = storeInfos.indexOf(storeInfo);
       // 스크롤 위치 계산 (항목의 높이 * 인덱스)
-      final double scrollPosition = index * height * 0.13;
+      final double scrollPosition = index * height * 0.125;
       _scrollController.jumpTo(scrollPosition);
     }
 
@@ -161,9 +169,9 @@ class _MyMapScreenState extends State<MyMapScreen> {
               ),
             ),
             DraggableScrollableSheet(
-              initialChildSize: height * 0.001 * 0.35,
-              minChildSize: height * 0.001 * 0.35,
-              maxChildSize: height * 0.001 * 0.4,
+              initialChildSize: height * 0.001 * 0.4,
+              minChildSize: height * 0.001 * 0.4,
+              maxChildSize: height * 0.001 * 0.5,
               builder: (BuildContext context, ScrollController scrollController) {
                 return Container(
                   decoration: BoxDecoration(
@@ -183,20 +191,33 @@ class _MyMapScreenState extends State<MyMapScreen> {
                               final storeInfo = storeInfos[index];
                               final markerPosition = LatLng(storeInfo.latitude, storeInfo.longitude);
                               final distance = haversineDistance(_center, markerPosition);
-      
+
                               if(distance <= 1000) {
                                 return Card(
+                                  shape: RoundedRectangleBorder(
+                                      side: BorderSide(color: Theme.of(context).colorScheme.outline, width: 2),
+                                      borderRadius: BorderRadius.all(Radius.circular(20))
+                                  ),
                                   child: ListTile(
                                     onTap: () async {}, // 메모 및 영업 이력 확인할 수 있는 페이지로 이동
                                     title: Text(storeInfo.name, style: GoogleFonts.notoSans(),),
                                     subtitle: Text('폐업일자: ${storeInfo.closingDate}\n${storeInfo.description}', style: GoogleFonts.notoSans()),
+                                    tileColor: Theme.of(context).colorScheme.onPrimary,
+                                    shape: RoundedRectangleBorder(
+                                        side: BorderSide(color: Theme.of(context).colorScheme.outline, width: 2),
+                                        borderRadius: BorderRadius.all(Radius.circular(20))
+                                    ),
                                     trailing: GestureDetector(
-                                      child: const Icon(Icons.image_rounded, size: 35),
+                                      child: const Icon(Icons.image_outlined, size: 35),
                                       onTap: () {
                                         showDialog(
                                           context: context,
                                           builder: (BuildContext context) {
                                             return Dialog(
+                                              shape: RoundedRectangleBorder(
+                                                side: BorderSide(color: Theme.of(context).colorScheme.outline, width: 3),
+                                                  borderRadius: BorderRadius.all(Radius.circular(20))
+                                              ),
                                               backgroundColor: Theme.of(context).colorScheme.background,
                                             child: Padding(
                                               padding: EdgeInsets.only(top: 25, bottom: 25),
@@ -204,9 +225,9 @@ class _MyMapScreenState extends State<MyMapScreen> {
                                                 scrollDirection: Axis.vertical,
                                                 child: Column(
                                                   children: <Widget>[
-      
+
                                                     const SizedBox(height: 20),
-      
+
                                                     Padding(
                                                       padding: EdgeInsets.all(8.0),
                                                       child: Text(
@@ -215,15 +236,15 @@ class _MyMapScreenState extends State<MyMapScreen> {
                                                         textAlign: TextAlign.center,
                                                       ),
                                                     ),
-      
+
                                                     const SizedBox(height: 15),
                                                     Row(
                                                       mainAxisAlignment: MainAxisAlignment.center,
                                                       children: [
                                                         Container(
                                                           decoration: BoxDecoration(
-                                                            color: Theme.of(context).colorScheme.secondaryContainer,
-                                                            border: Border.all(color: Colors.black, width: 1),
+                                                            color: Theme.of(context).colorScheme.background,
+                                                            border: Border.all(color: Theme.of(context).colorScheme.outline, width: 2),
                                                             borderRadius: BorderRadius.circular(10),
                                                           ),
                                                           child: GestureDetector(
@@ -242,13 +263,13 @@ class _MyMapScreenState extends State<MyMapScreen> {
                                                                   '${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}'
                                                                   '${now.hour.toString().padLeft(2, '0')}${now.minute.toString().padLeft(2, '0')}';
                                                               final temporaryPath = join((await getTemporaryDirectory()).path, '${storeInfo.name}_$formattedDate.png');
-      
+
                                                               Navigator.pop(context);
-      
-      
+
+
                                                               final selectedImage = image;
                                                               await selectedImage?.saveTo(temporaryPath);
-      
+
                                                               final uploadedImagePath = await Navigator.push(
                                                                   context,
                                                                   MaterialPageRoute(
@@ -258,13 +279,13 @@ class _MyMapScreenState extends State<MyMapScreen> {
                                                             },
                                                           ),
                                                         ),
-      
+
                                                         const SizedBox(width: 10),
-      
+
                                                         Container(
                                                           decoration: BoxDecoration(
-                                                            color: Theme.of(context).colorScheme.secondaryContainer,
-                                                            border: Border.all(color: Colors.black, width: 1),
+                                                            color: Theme.of(context).colorScheme.background,
+                                                            border: Border.all(color: Theme.of(context).colorScheme.outline, width: 2),
                                                             borderRadius: BorderRadius.circular(10),
                                                           ),
                                                           child: GestureDetector(
@@ -284,10 +305,10 @@ class _MyMapScreenState extends State<MyMapScreen> {
                                                                   '${now.hour.toString().padLeft(2, '0')}${now.minute.toString().padLeft(2, '0')}';
                                                               final temporaryPath = join((await getTemporaryDirectory()).path, '${storeInfo.name}_$formattedDate.png');
                                                               Navigator.pop(context);
-      
+
                                                               final selectedImage = image;
                                                               await selectedImage?.saveTo(temporaryPath);
-      
+
                                                               final uploadedImagePath = await Navigator.push(
                                                                 context,
                                                                 MaterialPageRoute(
@@ -299,9 +320,9 @@ class _MyMapScreenState extends State<MyMapScreen> {
                                                         )
                                                       ],
                                                     ),
-      
+
                                                     const SizedBox(height: 20),
-      
+
                                                     FutureBuilder<QuerySnapshot>(
                                                       future: FirebaseFirestore.instance
                                                           .collection('images')
@@ -335,6 +356,10 @@ class _MyMapScreenState extends State<MyMapScreen> {
                                                                       context: context,
                                                                       builder: (BuildContext context) {
                                                                         return AlertDialog(
+                                                                          shape: RoundedRectangleBorder(
+                                                                              side: BorderSide(color: Theme.of(context).colorScheme.outline, width: 3),
+                                                                              borderRadius: BorderRadius.all(Radius.circular(20))
+                                                                          ),
                                                                           backgroundColor: Theme.of(context).colorScheme.background,
                                                                           content: Column(
                                                                             mainAxisAlignment: MainAxisAlignment.center,
@@ -349,7 +374,11 @@ class _MyMapScreenState extends State<MyMapScreen> {
                                                                               ),
                                                                               SizedBox(height: 5),
                                                                               Card(
-                                                                                color: Theme.of(context).colorScheme.primaryContainer,
+                                                                                color: Theme.of(context).colorScheme.onPrimary,
+                                                                                shape: RoundedRectangleBorder(
+                                                                                    side: BorderSide(color: Theme.of(context).colorScheme.outline, width: 2),
+                                                                                    borderRadius: BorderRadius.all(Radius.circular(10))
+                                                                                ),
                                                                                 child: Padding(
                                                                                   padding: const EdgeInsets.all(10.0),
                                                                                   child: Center(
@@ -363,14 +392,21 @@ class _MyMapScreenState extends State<MyMapScreen> {
                                                                                   ),
                                                                                 ),
                                                                               ),
+
                                                                               SizedBox(height: 2),
+
                                                                               MaterialButton(
+                                                                                  shape: RoundedRectangleBorder(
+                                                                                      side: BorderSide(color: Theme.of(context).colorScheme.outline, width: 2),
+                                                                                      borderRadius: BorderRadius.all(Radius.circular(10))
+                                                                                  ),
                                                                                   onPressed: () async {
                                                                                     await deleteImage(imageUrl);
                                                                                     setState(() {});
                                                                                   },
-                                                                                child: Text('사진 삭제',style: TextStyle(fontSize: 18),),
-                                                                                color: Theme.of(context).colorScheme.primary)
+                                                                                child: Text('사진 삭제',style: TextStyle(fontSize: 18)),
+                                                                                color: Theme.of(context).colorScheme.background),
+
                                                                             ],
                                                                           ),
                                                                         );
@@ -380,7 +416,7 @@ class _MyMapScreenState extends State<MyMapScreen> {
                                                                   child: ClipRRect(
                                                                     borderRadius: BorderRadius.circular(5.0),
                                                                     child: Container(
-      
+
                                                                       height: 200,
                                                                       child: Image.network(
                                                                         imageUrl,
@@ -394,7 +430,7 @@ class _MyMapScreenState extends State<MyMapScreen> {
                                                               }
                                                             }).toList(),
                                                           );
-      
+
                                                         }
                                                         return Center(child: CircularProgressIndicator());
                                                       },
@@ -485,3 +521,5 @@ class StoreInfo {
     this.imagePath
   });
 }
+
+

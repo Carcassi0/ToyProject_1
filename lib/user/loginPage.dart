@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-
+import 'displayMessageToUser.dart';
 import 'forgotpwPage.dart';
 
 class loginPage extends StatefulWidget {
@@ -18,18 +18,32 @@ class _loginPageState extends State<loginPage> {
   final _passwordController = TextEditingController();
 
 
-  Future signIn() async {
+  void signIn() async {
+    try {
+      showDialog(
+        context: context,
+        barrierDismissible: false, // Ensure dialog cannot be dismissed by tapping outside
+        builder: (context) {
+          return Center(child: CircularProgressIndicator());
+        },
+      );
 
-    showDialog(context: context, builder: (context){
-      return Center(child: CircularProgressIndicator());
-    });
-
-    await FirebaseAuth.instance.signInWithEmailAndPassword(
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: _emailController.text.trim(),
-        password: _passwordController.text.trim()
-    );
-    Navigator.of(context).pop();
+        password: _passwordController.text.trim(),
+      );
+
+      Navigator.pop(context);
+    } on FirebaseAuthException catch (e) {
+      // Close the current dialog
+      Navigator.pop(context);
+
+      // Show error message to the user
+      displayMessageToUser(e.code, context);
+    }
   }
+
+
   @override
 
   // 메모리 확보
@@ -38,6 +52,7 @@ class _loginPageState extends State<loginPage> {
     _passwordController.dispose();
     super.dispose();
   }
+
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,

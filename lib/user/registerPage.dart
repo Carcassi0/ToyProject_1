@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:doitflutter/user/storecodeConfirm.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'displayMessageToUser.dart';
 
 class RegisterPage extends StatefulWidget {
   final VoidCallback showLoginPage;
@@ -40,7 +42,15 @@ class _RegisterPageState extends State<RegisterPage> {
 
   Future signUp() async {
     try {
-      if (passwordConfirmed()) {
+      showDialog(
+        context: context,
+        barrierDismissible: false, // Ensure dialog cannot be dismissed by tapping outside
+        builder: (context) {
+          return Center(child: CircularProgressIndicator());
+        },
+      );
+
+      if (passwordConfirmed() && inputConfirmed() && storecodeConfirm(_storecodeController.text.trim())) {
         // 유저 생성
         await FirebaseAuth.instance.createUserWithEmailAndPassword(
             email: _emailController.text.trim(),
@@ -53,10 +63,21 @@ class _RegisterPageState extends State<RegisterPage> {
             _emailController.text.trim(),
             _storecodeController.text.trim()
         );
+        Navigator.pop(context);
+      } else {
+      Navigator.pop(context);
+      showDialog(context: context, builder: (builder) => AlertDialog(
+        title: Text('입력한 정보를 다시 확인하세요', style: GoogleFonts.notoSans(fontSize: 16),),
+        content: Text('1.모든 정보를 입력하셨나요?\n2.지점 코드를 정확히 입력하셨나요?',style: GoogleFonts.notoSans(fontSize: 13)),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(20))
+        ),
+      ));
       }
+
     } on FirebaseAuthException catch  (e) {
-      print('Failed with error code: ${e.code}');
-      print(e.message);
+      Navigator.pop(context);
+      displayMessageToUser(e.code, context);
     }
   }
 
@@ -71,6 +92,20 @@ class _RegisterPageState extends State<RegisterPage> {
 
   bool passwordConfirmed(){
     if (_passwordController.text.trim() == _confirmpasswordController.text.trim()) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+
+  bool inputConfirmed(){
+    if (_firstnameController.text.trim() != null
+        && _lastnameController.text.trim() != null
+        && _storecodeController.text.trim() != null
+        && _emailController.text.trim() != null
+        && _passwordController.text.trim() != null
+        && _confirmpasswordController.text.trim() != null) {
       return true;
     } else {
       return false;
