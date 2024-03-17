@@ -27,7 +27,7 @@ class DisplayPictureScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('업로드', style: GoogleFonts.notoSans(fontWeight: FontWeight.w400)),
         leading: IconButton(
-          icon: Icon(Icons.close),
+          icon: Icon(Icons.close_outlined),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -35,7 +35,7 @@ class DisplayPictureScreen extends StatelessWidget {
         backgroundColor: Theme.of(context).colorScheme.background,
         actions: <Widget>[
           IconButton(
-            icon: const Icon(Icons.check),
+            icon: const Icon(Icons.check_outlined),
             onPressed: () async {
 
               // 이미지 업로드 진행 출력
@@ -52,6 +52,17 @@ class DisplayPictureScreen extends StatelessWidget {
               indicator.remove();
 
               Navigator.pop(context, imageUrl);
+
+              showDialog(
+                context: context,
+                builder: (builder) => AlertDialog(
+                  title: Text('알림', style: GoogleFonts.notoSans(fontSize: 16),),
+                  content: Text('사진이 정상적으로 업로드되었습니다.',style: GoogleFonts.notoSans(fontSize: 13)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(20))
+                  ),
+                ),
+              );
             },
           ),
         ],

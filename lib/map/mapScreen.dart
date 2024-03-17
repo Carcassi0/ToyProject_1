@@ -169,9 +169,9 @@ class _MyMapScreenState extends State<MyMapScreen> {
               ),
             ),
             DraggableScrollableSheet(
-              initialChildSize: height * 0.001 * 0.4,
-              minChildSize: height * 0.001 * 0.4,
-              maxChildSize: height * 0.001 * 0.5,
+              initialChildSize: height * 0.001 * 0.5,
+              minChildSize: height * 0.001 * 0.5,
+              maxChildSize: height * 0.001 * 0.7,
               builder: (BuildContext context, ScrollController scrollController) {
                 return Container(
                   decoration: BoxDecoration(
@@ -198,8 +198,7 @@ class _MyMapScreenState extends State<MyMapScreen> {
                                       side: BorderSide(color: Theme.of(context).colorScheme.outline, width: 2),
                                       borderRadius: BorderRadius.all(Radius.circular(20))
                                   ),
-                                  child: ListTile(
-                                    onTap: () async {}, // 메모 및 영업 이력 확인할 수 있는 페이지로 이동
+                                  child: ListTile(// 메모 및 영업 이력 확인할 수 있는 페이지로 이동
                                     title: Text(storeInfo.name, style: GoogleFonts.notoSans(),),
                                     subtitle: Text('폐업일자: ${storeInfo.closingDate}\n${storeInfo.description}', style: GoogleFonts.notoSans()),
                                     tileColor: Theme.of(context).colorScheme.onPrimary,

@@ -32,7 +32,7 @@ class _newLocationAddState extends State<newLocationAdd> {
   final GlobalKey<FormState> _addressFormKey = GlobalKey<FormState>();
   final GlobalKey<FormState> _dateFormKey = GlobalKey<FormState>();
   Map<String, String> formData = {};
-  List<bool> isSelected = [true, false, false];
+  List<bool> isSelected = [false, false, false];
   late String selected = '';
   late double longitude = 0.0;
   late double latitude = 0.0;
@@ -56,8 +56,7 @@ class _newLocationAddState extends State<newLocationAdd> {
 
   Future addStoreInfo() async {
     try {
-
-      showDialog(context: context, builder: (context){
+      showDialog(context: context, builder: (context) {
         return Center(child: CircularProgressIndicator());
       });
 
@@ -67,17 +66,20 @@ class _newLocationAddState extends State<newLocationAdd> {
         latitude = coordinates[0];
       }
       await addNewStore(
-          _nameController.text.trim(),
-          _addressController.text.trim(),
-          _detailAddresslController.text.trim(),
-          _closedDateController.text.trim(),
-          selected,
-          longitude,
-          latitude
+        _nameController.text.trim(),
+        _addressController.text.trim(),
+        _detailAddresslController.text.trim(),
+        _closedDateController.text.trim(),
+        selected,
+        longitude,
+        latitude,
       );
+
       Navigator.of(context).pop();
+
       Navigator.push(
           context, MaterialPageRoute(builder: (context) => MyHomePage()));
+
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -88,12 +90,12 @@ class _newLocationAddState extends State<newLocationAdd> {
           );
         },
       );
-
-    } on FirebaseAuthException catch  (e) {
+    } on FirebaseAuthException catch (e) {
       print('Failed with error code: ${e.code}');
       print(e.message);
-    } finally {Navigator.of(context).pop();} // 에러 발생시 대비
+    }
   }
+
 
 
 

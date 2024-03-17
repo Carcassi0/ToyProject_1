@@ -1,7 +1,7 @@
 import 'dart:core';
 import 'dart:async';
 import 'dart:math';
-import 'package:doitflutter/myPage.dart';
+import 'package:doitflutter/user/myPage.dart';
 import 'package:doitflutter/settingPage.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
@@ -16,7 +16,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' show join;
 import 'package:google_fonts/google_fonts.dart';
-import 'newLocationAdd.dart';
+import 'map/newLocationAdd.dart';
 
 
 

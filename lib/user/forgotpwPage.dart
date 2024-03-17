@@ -94,9 +94,13 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
             SizedBox(height: 20),
 
             MaterialButton(
+                shape: RoundedRectangleBorder(
+                    side: BorderSide(color: Theme.of(context).colorScheme.outline, width: 2),
+                    borderRadius: BorderRadius.all(Radius.circular(10))
+                ),
               onPressed: passwordReset,
-              child: Text('비밀번호 초기화',style: TextStyle(fontSize: 18,color: Colors.white),),
-              color: Colors.black
+              child: Text('비밀번호 초기화',style: TextStyle(fontSize: 18,color: Theme.of(context).colorScheme.outline),),
+              color: Theme.of(context).colorScheme.background
             )
           ],
         ),

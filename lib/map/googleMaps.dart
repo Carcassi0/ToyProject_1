@@ -58,14 +58,15 @@ class _GoogleMapsState extends State<GoogleMaps> {
 
 
   BitmapDescriptor getMarkerIcon(dateFromNow){
-    if(dateFromNow>14)
-      return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed);
-    else if(dateFromNow<=14 && dateFromNow>7)
-      return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue);
-    else if(dateFromNow<=7 && dateFromNow>=0)
-      return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen);
-    else
-      return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue);
+      if(dateFromNow>=14)
+        return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed);
+      else if(dateFromNow<14 && dateFromNow>7)
+        return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue);
+      else if(dateFromNow<=7 && dateFromNow>=0)
+        return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen);
+      else
+        return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueViolet);
+
   }
 
   int calculateDays(String dateString) {
@@ -125,7 +126,7 @@ class _GoogleMapsState extends State<GoogleMaps> {
                 snippet: "폐업일자:${coord.closingDate.toString()}\n${coord.description.toString()}",
               ),
               visible: true,
-              icon: getMarkerIcon(calculateDays(coord.closingDate.toString()))//BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+              icon: getMarkerIcon(calculateDays(coord.closingDate))//BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
             );
             _markers.add(marker);
             print("Added marker: $marker"); // 마커 추가 확인을 위한 출력

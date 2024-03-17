@@ -4,8 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'theme/theme.dart';
-import 'theme/themeProvider.dart';
+import '../theme/theme.dart';
+import '../theme/themeProvider.dart';
 
 class myPage extends StatelessWidget {
   const myPage({super.key});
@@ -115,6 +115,10 @@ class myPage extends StatelessWidget {
                       SizedBox(height: 200),
 
                       MaterialButton(
+                          shape: RoundedRectangleBorder(
+                              side: BorderSide(color: Theme.of(context).colorScheme.outline, width: 2),
+                              borderRadius: BorderRadius.all(Radius.circular(10))
+                          ),
                           onPressed: () {
                             Navigator.push(
                               context,
@@ -122,7 +126,7 @@ class myPage extends StatelessWidget {
                             );
                           },
                           child: Text('비밀번호 초기화',style: TextStyle(fontSize: 18),),
-                          color: Theme.of(context).colorScheme.primaryContainer
+                          color: Theme.of(context).colorScheme.background
                       )
                     ],
                   ),
