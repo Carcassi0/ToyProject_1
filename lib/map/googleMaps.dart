@@ -57,15 +57,19 @@ class _GoogleMapsState extends State<GoogleMaps> {
 
 
 
-  BitmapDescriptor getMarkerIcon(dateFromNow){
-      if(dateFromNow>=14)
+  BitmapDescriptor getMarkerIcon(dateFromNow, id){
+    if(id == '폐업') {
+      if (dateFromNow >= 14)
+        return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure);
+      else if (dateFromNow < 14 && dateFromNow > 7)
         return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed);
-      else if(dateFromNow<14 && dateFromNow>7)
-        return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue);
-      else if(dateFromNow<=7 && dateFromNow>=0)
+      else if (dateFromNow <= 7 && dateFromNow >= 0)
         return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen);
       else
         return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueViolet);
+    } else {
+      return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue);
+    }
 
   }
 
@@ -123,10 +127,12 @@ class _GoogleMapsState extends State<GoogleMaps> {
               position: markerPosition,
               infoWindow: InfoWindow(
                 title: coord.name.toString(),
-                snippet: "폐업일자:${coord.closingDate.toString()}\n${coord.description.toString()}",
+                snippet: coord.id == '폐업'
+                    ? "폐업일자:${coord.closingDate.toString()}\n${coord.description.toString()}"
+                    : "등록일자:${coord.closingDate.toString()}\n${coord.description.toString()}",
               ),
               visible: true,
-              icon: getMarkerIcon(calculateDays(coord.closingDate))//BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+              icon: getMarkerIcon(calculateDays(coord.closingDate), coord.id)//BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
             );
             _markers.add(marker);
             print("Added marker: $marker"); // 마커 추가 확인을 위한 출력
@@ -205,7 +211,7 @@ class _GoogleMapsState extends State<GoogleMaps> {
           },
         ),
           Positioned(
-            top: height*0.1,right: width*0.06,
+            top: height*0.095,right: width*0.06,
             child: FloatingActionButton(
                 shape: RoundedRectangleBorder(
                     side: BorderSide(color: Theme.of(context).colorScheme.outline, width: 2),
@@ -214,7 +220,27 @@ class _GoogleMapsState extends State<GoogleMaps> {
                 backgroundColor: Theme.of(context).colorScheme.background,
                 onPressed: (){_locateUser();},
             child: Icon(Icons.location_searching_outlined, size: 30, color: Theme.of(context).colorScheme.outline,)),
-          )
+          ),
+          Positioned(
+            top: height*0.095, left: width*0.06,
+            child: FloatingActionButton(
+                shape: RoundedRectangleBorder(
+                    side: BorderSide(color: Theme.of(context).colorScheme.outline, width: 2),
+                    borderRadius: BorderRadius.all(Radius.circular(20))
+                ),
+                backgroundColor: Theme.of(context).colorScheme.background,
+                onPressed: () async {showDialog(
+                  context: context,
+                  builder: (builder) => AlertDialog(
+                    title: Text('범례', style: GoogleFonts.notoSans(fontSize: 16),),
+                    content: Text('',style: GoogleFonts.notoSans(fontSize: 13)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(20))
+                    ),
+                  ),
+                );},
+                child: Icon(Icons.location_on_outlined, size: 30, color: Theme.of(context).colorScheme.outline)),
+          ),
       ]
       ),
     );
