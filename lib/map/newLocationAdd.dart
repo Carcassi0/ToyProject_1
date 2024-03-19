@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:remedi_kopo/remedi_kopo.dart';
 import 'package:geocoding/geocoding.dart';
+import 'setUserLocation.dart';
 
 
 class newLocationAdd extends StatefulWidget {
@@ -40,7 +41,11 @@ class _newLocationAddState extends State<newLocationAdd> {
   DateTime _dateTime = DateTime.now();
 
 
+
+
   @override
+
+
 
   void dispose(){
 
@@ -176,6 +181,7 @@ class _newLocationAddState extends State<newLocationAdd> {
       return [0.0, 0.0]; // 예외 발생 시 기본값 반환
     }
   }
+
 
 
 

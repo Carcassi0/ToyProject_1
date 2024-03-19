@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:doitflutter/map/setUserLocation.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
@@ -32,7 +33,7 @@ class _MyMapScreenState extends State<MyMapScreen> {
       '${DateTime.now().year}${DateTime.now().month.toString().padLeft(2, '0')}${DateTime.now().day.toString().padLeft(2, '0')}';
 
 
-  final LatLng _center = const LatLng(37.285172, 127.065014);
+  LatLng? _center;
   late CameraController _controller;
   ScrollController _scrollController = ScrollController();
   late Future<void> _initializeControllerFuture;
@@ -45,6 +46,7 @@ class _MyMapScreenState extends State<MyMapScreen> {
   @override
   void initState() {
     super.initState();
+    _initializeCenter();
     _initializeCamera();
     _picker = ImagePicker();
     initPath();
@@ -55,7 +57,12 @@ class _MyMapScreenState extends State<MyMapScreen> {
     setState(() {}); // 파일 가져온 이후에 상태 업데이트
   }
 
-
+  Future<void> _initializeCenter() async {
+    final LatLng center = await setUserLocation(); // setUserLocation 함수를 호출하여 사용자의 위치를 가져옴
+    setState(() {
+      _center = center; // 사용자의 위치를 _center에 설정
+    });
+  }
 
 
   Future<void> _initializeCamera() async {
@@ -97,7 +104,7 @@ class _MyMapScreenState extends State<MyMapScreen> {
       );
 
       final markerPosition = LatLng(storeInfo.latitude, storeInfo.longitude);
-      final distance = haversineDistance(_center, markerPosition);
+      final distance = haversineDistance(_center!, markerPosition);
       if (distance <= 1000) {
         storeInfos.add(storeInfo);
       }
@@ -190,7 +197,7 @@ class _MyMapScreenState extends State<MyMapScreen> {
                             itemBuilder: (BuildContext context, int index) {
                               final storeInfo = storeInfos[index];
                               final markerPosition = LatLng(storeInfo.latitude, storeInfo.longitude);
-                              final distance = haversineDistance(_center, markerPosition);
+                              final distance = haversineDistance(_center!, markerPosition);
 
                               if(distance <= 1000) {
                                 return Card(

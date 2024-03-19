@@ -1,6 +1,6 @@
 
 import 'dart:async';
-
+import 'package:doitflutter/map/setUserLocation.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -27,7 +27,8 @@ class GoogleMaps extends StatefulWidget {
 class _GoogleMapsState extends State<GoogleMaps> {
 
   late GoogleMapController mapController;
-  final LatLng _center = const LatLng(37.285172, 127.065014);
+  LatLng? _center;
+  // late LatLng _center = LatLng(37.285172, 127.065014);
   final Set<Marker> _markers = {};
   final Set<Circle> _circles = {};
   final now = DateTime.now();
@@ -42,7 +43,7 @@ class _GoogleMapsState extends State<GoogleMaps> {
     // 마커를 클릭하면 해당하는 ListView 항목을 스크롤하는 기능 추가
     return Set<Marker>.from(widget.storeInfos.map((storeInfo) {
       final markerPosition = LatLng(storeInfo.latitude, storeInfo.longitude);
-      final distance = haversineDistance(_center, markerPosition);
+      final distance = haversineDistance(_center!, markerPosition);
 
       return Marker(
         markerId: MarkerId(storeInfo.id),
@@ -102,12 +103,19 @@ class _GoogleMapsState extends State<GoogleMaps> {
     super.initState();
     _loadMarkersFromCSV();
     _loadMapStyles();
+    _initializeCenter();
   }
 
   Future _loadMapStyles() async {
     _darkMapStyle = await rootBundle.loadString('assets/darkModeStyle.json');
   }
 
+  Future<void> _initializeCenter() async {
+    final LatLng center = await setUserLocation(); // setUserLocation 함수를 호출하여 사용자의 위치를 가져옴
+    setState(() {
+      _center = center; // 사용자의 위치를 _center에 설정
+    });
+  }
 
   Future<void> _loadMarkersFromCSV() async {
     try {
@@ -116,7 +124,7 @@ class _GoogleMapsState extends State<GoogleMaps> {
         _circles.clear();
         for (final coord in widget.storeInfos) {
           final markerPosition = LatLng(coord.latitude, coord.longitude);
-          final distance = haversineDistance(_center, markerPosition);
+          final distance = haversineDistance(_center!, markerPosition);
           if (distance <= 1000) {
             final marker = Marker(
               onTap: (){
@@ -140,14 +148,14 @@ class _GoogleMapsState extends State<GoogleMaps> {
         }
         _circles.add(Circle(
           circleId: const CircleId('1000m_radius'),
-          center: _center,
+          center: _center!,
           radius: 1000,
           strokeWidth: 2,
           strokeColor: Colors.red,
           fillColor: Colors.red.withOpacity(0.1),
         ));
       });
-    } catch (e) {
+    } catch (e) { // 에러 발생 ==> _center 불러올 때까지 대기 필요.
       print("Error loading markers: $e");
     }
   }
@@ -174,6 +182,8 @@ class _GoogleMapsState extends State<GoogleMaps> {
 
 
 
+
+
   @override
   Widget build(BuildContext context) {
     var height, width;
@@ -186,7 +196,7 @@ class _GoogleMapsState extends State<GoogleMaps> {
           myLocationButtonEnabled: false,
           onMapCreated: _onMapCreated,
           initialCameraPosition: CameraPosition(
-            target: _center,
+            target: _center!,
             zoom: 14.0,
           ),
           myLocationEnabled: true,
