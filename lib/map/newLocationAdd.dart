@@ -41,11 +41,7 @@ class _newLocationAddState extends State<newLocationAdd> {
   DateTime _dateTime = DateTime.now();
 
 
-
-
   @override
-
-
 
   void dispose(){
 

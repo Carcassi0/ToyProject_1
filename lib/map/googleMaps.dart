@@ -27,12 +27,12 @@ class GoogleMaps extends StatefulWidget {
 class _GoogleMapsState extends State<GoogleMaps> {
 
   late GoogleMapController mapController;
-  LatLng? _center;
+  LatLng? _center; // late 붙였다가 삭제, late와 ?는 모순되는 개념임 late 키워드를 사용하면 Dart는 해당 변수가 초기화되기 전에 접근되지 않을 것이라고 가정함. 따라서 null 가능으로 선언하고 null 예외처리 필요.
   // late LatLng _center = LatLng(37.285172, 127.065014);
   final Set<Marker> _markers = {};
   final Set<Circle> _circles = {};
   final now = DateTime.now();
-  double _currentZoom = 13.0;
+  double _currentZoom = 12.0;
   String? _darkMapStyle;
   final fileformattedDate =
       '${DateTime.now().year}${DateTime.now().month.toString().padLeft(2, '0')}${DateTime.now().day.toString().padLeft(2, '0')}';
@@ -101,9 +101,10 @@ class _GoogleMapsState extends State<GoogleMaps> {
   @override
   void initState() {
     super.initState();
-    _loadMarkersFromCSV();
+    _initializeCenter().then((_) {
+      _loadMarkersFromCSV();
+    });
     _loadMapStyles();
-    _initializeCenter();
   }
 
   Future _loadMapStyles() async {
@@ -118,32 +119,44 @@ class _GoogleMapsState extends State<GoogleMaps> {
   }
 
   Future<void> _loadMarkersFromCSV() async {
+
+    if (_center == null) {
+      print("Center is not initialized yet.");
+      return;
+    }
+
     try {
       setState(() {
-        //_markers.clear();
+        _markers.clear();
         _circles.clear();
-        for (final coord in widget.storeInfos) {
-          final markerPosition = LatLng(coord.latitude, coord.longitude);
-          final distance = haversineDistance(_center!, markerPosition);
-          if (distance <= 1000) {
-            final marker = Marker(
-              onTap: (){
-                final storeId = '${coord.name.toString()}'; // 마커에 대한 고유한 식별자 (storeInfos의 id와 동일해야 함)
-                widget.scrollToItem(storeId);
-              },
-              markerId: MarkerId(coord.name.toString()),
-              position: markerPosition,
-              infoWindow: InfoWindow(
-                title: coord.name.toString(),
-                snippet: coord.id == '폐업'
-                    ? "폐업일자:${coord.closingDate.toString()}\n${coord.description.toString()}"
-                    : "등록일자:${coord.closingDate.toString()}\n${coord.description.toString()}",
-              ),
-              visible: true,
-              icon: getMarkerIcon(calculateDays(coord.closingDate), coord.id)//BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
-            );
-            _markers.add(marker);
-            print("Added marker: $marker"); // 마커 추가 확인을 위한 출력
+        if(_center != null) {
+          for (final coord in widget.storeInfos) {
+            final markerPosition = LatLng(coord.latitude, coord.longitude);
+            final distance = haversineDistance(_center!, markerPosition);
+            if (distance <= 1000) {
+              final marker = Marker(
+                  onTap: () {
+                    final storeId = '${coord.name
+                        .toString()}'; // 마커에 대한 고유한 식별자 (storeInfos의 id와 동일해야 함)
+                    widget.scrollToItem(storeId);
+                  },
+                  markerId: MarkerId(coord.name.toString()),
+                  position: markerPosition,
+                  infoWindow: InfoWindow(
+                    title: coord.name.toString(),
+                    snippet: coord.id == '폐업'
+                        ? "폐업일자:${coord.closingDate.toString()}\n${coord
+                        .description.toString()}"
+                        : "등록일자:${coord.closingDate.toString()}\n${coord
+                        .description.toString()}",
+                  ),
+                  visible: true,
+                  icon: getMarkerIcon(calculateDays(coord.closingDate), coord
+                      .id) //BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+              );
+              _markers.add(marker);
+              print("Added marker: $marker"); // 마커 추가 확인을 위한 출력
+            }
           }
         }
         _circles.add(Circle(
@@ -190,6 +203,15 @@ class _GoogleMapsState extends State<GoogleMaps> {
     height = MediaQuery.of(context).size.height;
     width = MediaQuery.of(context).size.width;
     final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+    bool initializeDone = false; // 처음 한번은 무조건 마커 로딩 필요
+    double _previousZoomLevel = 0.0;
+
+    if(_center == null){
+      return Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+
     return Scaffold(
       body: Stack(
         children: <Widget>[GoogleMap(
@@ -204,19 +226,26 @@ class _GoogleMapsState extends State<GoogleMaps> {
           circles: _circles,
           onCameraIdle: (){
             mapController.getZoomLevel().then((value){
-              setState(() {
-                if (themeProvider.isDarkMode()) {
-                  // 다크 모드일 경우 darkMapStyle 적용
-                  mapController!.setMapStyle(_darkMapStyle);
-                } else {
-                  // 다크 모드가 아닐 경우 기본 스타일 적용
-                  mapController!.setMapStyle(null); // 또는 다른 기본 스타일로 변경
-                }
-                _currentZoom = value;
-                if(_currentZoom >= 12.0){
-                  _loadMarkersFromCSV();
-                }
-              });
+              if(initializeDone != true){
+                setState(() {
+                  initializeDone = true;
+                  if (themeProvider.isDarkMode()) {
+                    // 다크 모드일 경우 darkMapStyle 적용
+                    mapController!.setMapStyle(_darkMapStyle);
+                  } else {
+                    // 다크 모드가 아닐 경우 기본 스타일 적용
+                    mapController!.setMapStyle(null); // 또는 다른 기본 스타일로 변경
+                  }
+                  _currentZoom = value;
+                  if(_currentZoom >= 12.0 && _previousZoomLevel != _currentZoom){
+                    _loadMarkersFromCSV();
+                  }
+                  _previousZoomLevel = value;
+                });
+              } else if (_currentZoom >= 12.0 && _previousZoomLevel != value){
+                _loadMarkersFromCSV();
+              }
+              _previousZoomLevel = value;
             });
           },
         ),
@@ -242,8 +271,35 @@ class _GoogleMapsState extends State<GoogleMaps> {
                 onPressed: () async {showDialog(
                   context: context,
                   builder: (builder) => AlertDialog(
-                    title: Text('범례', style: GoogleFonts.notoSans(fontSize: 16),),
-                    content: Text('',style: GoogleFonts.notoSans(fontSize: 13)),
+                    title: Text('도움말', style: GoogleFonts.notoSans(fontSize: 17, fontWeight: FontWeight.bold),),
+                    content: Container(
+                      height: height * 0.15,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+
+                          Text('$fileformattedDate 이틀 전 기준...',style: GoogleFonts.notoSans(fontSize: 13)),
+                          Row(
+                            children: [
+                              Icon(Icons.place, color: Colors.red),
+                              Text('7일 이상 14일 미만',style: GoogleFonts.notoSans(fontSize: 13))
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Icon(Icons.place, color: Colors.green),
+                              Text('7일 미만',style: GoogleFonts.notoSans(fontSize: 13))
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Icon(Icons.place, color: Colors.blue),
+                              Text('신축 및 휴업',style: GoogleFonts.notoSans(fontSize: 13))
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(Radius.circular(20))
                     ),

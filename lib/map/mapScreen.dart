@@ -35,9 +35,8 @@ class _MyMapScreenState extends State<MyMapScreen> {
 
   LatLng? _center;
   late CameraController _controller;
-  ScrollController _scrollController = ScrollController();
-  late Future<void> _initializeControllerFuture;
-  late ImagePicker _picker;
+  late ScrollController _scrollController = ScrollController();
+  late ImagePicker _picker = ImagePicker();
   XFile? _image;
   late String _filePath = '';
 
@@ -46,43 +45,28 @@ class _MyMapScreenState extends State<MyMapScreen> {
   @override
   void initState() {
     super.initState();
-    _initializeCenter();
-    _initializeCamera();
+    _initializeCenter().then((_) {
+      initPath();
+      getStoreInfoFromFirestore();
+    });
     _picker = ImagePicker();
-    initPath();
   }
 
-  void initPath() async {
+  Future<void> initPath() async {
+    storeInfos.clear(); // 캐시된 데이터를 가져올 수도 있기에 비우는 작업
     await getStoreInfoFromFirestore();
     setState(() {}); // 파일 가져온 이후에 상태 업데이트
   }
 
   Future<void> _initializeCenter() async {
+    setState(() {
+      _center = null; // 캐시된 데이터를 가져올 수도 있기에 비우는 작업
+    });
     final LatLng center = await setUserLocation(); // setUserLocation 함수를 호출하여 사용자의 위치를 가져옴
     setState(() {
       _center = center; // 사용자의 위치를 _center에 설정
     });
   }
-
-
-  Future<void> _initializeCamera() async {
-    final cameras = await availableCameras();
-
-    if (cameras.isEmpty) {
-      print('No cameras available');
-      return;
-    }
-
-    final firstCamera = cameras.first;
-
-    _controller = CameraController(
-      firstCamera,
-      ResolutionPreset.medium,
-    );
-
-    _initializeControllerFuture = _controller.initialize();
-  }
-
 
   Future<void> getStoreInfoFromFirestore() async {
     // Firestore 인스턴스 생성

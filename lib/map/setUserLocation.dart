@@ -19,23 +19,23 @@ Future<String?> _getUserLocation() async {
   }
 }
 
-Future<List<double>> convertAddressToCoordinates(String address) async {
-  try {
-    final geocodingPlatform = GeocodingPlatform.instance;
-    if (geocodingPlatform != null) {
-      final locations = await geocodingPlatform.locationFromAddress(address);
-      final latitude = locations.isNotEmpty ? locations[0].latitude : 0.0;
-      final longitude = locations.isNotEmpty ? locations[0].longitude : 0.0;
-      return [latitude, longitude];
-    } else {
-      print('Error: GeocodingPlatform.instance is null');
-      return [0.0, 0.0]; // 기본값 반환
-    }
-  } catch (e) {
-    print('Error: GeoCoding');
-    return [0.0, 0.0]; // 예외 발생 시 기본값 반환
-  }
-}
+// Future<List<double>> convertAddressToCoordinates(String address) async {
+//   try {
+//     final geocodingPlatform = GeocodingPlatform.instance;
+//     if (geocodingPlatform != null) {
+//       final locations = await geocodingPlatform.locationFromAddress(address);
+//       final latitude = locations.isNotEmpty ? locations[0].latitude : 0.0;
+//       final longitude = locations.isNotEmpty ? locations[0].longitude : 0.0;
+//       return [latitude, longitude];
+//     } else {
+//       print('Error: GeocodingPlatform.instance is null');
+//       return [0.0, 0.0]; // 기본값 반환
+//     }
+//   } catch (e) {
+//     print('Error: GeoCoding');
+//     return [0.0, 0.0]; // 예외 발생 시 기본값 반환
+//   }
+// }
 
 Future<LatLng> setUserLocation() async {
 
