@@ -59,6 +59,8 @@ dependencies:
   shared_preferences: ^2.2.2
   remedi_kopo: ^0.0.2
   geocoding: ^3.0.0
+  exif: ^3.3.0
+  flutter_exif_rotation: ^0.5.1
 
 
 dev_dependencies:

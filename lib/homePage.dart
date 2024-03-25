@@ -6,6 +6,7 @@ import 'package:doitflutter/settingPage.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
+import 'map/managerMapScreen.dart';
 import 'map/mapScreen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -116,6 +117,17 @@ class _MyHomePageState extends State<MyHomePage> {
         return '$lastName$firstName';
       } else {
         return 'Unknown User';
+      }
+    }
+
+    Future<bool> isManager() async {
+      final user = FirebaseAuth.instance.currentUser;
+      final email = user?.email;
+      if(email == 'ujcsi@naver.com' || email == 'dnldmlwhd123@gmail.com'){
+        return true;
+      }
+      else{
+        return false;
       }
     }
 
@@ -327,12 +339,19 @@ class _MyHomePageState extends State<MyHomePage> {
                         itemBuilder: (context, index) {
                           return InkWell(
 
-                            onTap: () {
+                            onTap: () async {
                               if (index == 0) {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (context) => const MyMapScreen()),
-                                );
+                                if(await isManager() == false){
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => const MyMapScreen()),
+                                  );
+                                }else if(await isManager() == true){
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => const managerMapScreen()),
+                                  );
+                                }
                               }
                               if (index == 1) {
                                 Navigator.push(

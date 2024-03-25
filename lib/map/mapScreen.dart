@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:doitflutter/map/setUserLocation.dart';
+import 'package:exif/exif.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +18,8 @@ import 'package:doitflutter/camera.dart';
 import 'package:path/path.dart' show join;
 import 'package:intl/intl.dart';
 import 'dart:io';
+
+import 'imageViewer.dart';
 
 class MyMapScreen extends StatefulWidget {
   const MyMapScreen({Key? key});
@@ -141,7 +144,7 @@ class _MyMapScreenState extends State<MyMapScreen> {
       final storeInfo = storeInfos.firstWhere((info) => info.name == storeId);
       final index = storeInfos.indexOf(storeInfo);
       // 스크롤 위치 계산 (항목의 높이 * 인덱스)
-      final double scrollPosition = index * height * 0.125;
+      final double scrollPosition = index * height * 0.159;
       _scrollController.jumpTo(scrollPosition);
     }
 
@@ -184,259 +187,224 @@ class _MyMapScreenState extends State<MyMapScreen> {
                               final distance = haversineDistance(_center!, markerPosition);
 
                               if(distance <= 1000) {
-                                return Card(
-                                  shape: RoundedRectangleBorder(
-                                      side: BorderSide(color: Theme.of(context).colorScheme.outline, width: 2),
-                                      borderRadius: BorderRadius.all(Radius.circular(20))
-                                  ),
-                                  child: ListTile(// 메모 및 영업 이력 확인할 수 있는 페이지로 이동
-                                    title: Text(storeInfo.name, style: GoogleFonts.notoSans(),),
-                                    subtitle: storeInfo.id == '폐업'
-                                      ? Text('폐업일자: ${storeInfo.closingDate}\n${storeInfo.description}',style: GoogleFonts.notoSans())
-                                      : Text('등록일자: ${storeInfo.closingDate}\n${storeInfo.description}',style: GoogleFonts.notoSans()),
+                                return Padding(
+                                  padding: const EdgeInsets.all(2.0),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                        color: Theme.of(context).colorScheme.onPrimary,
+                                        borderRadius: BorderRadius.circular(20),
+                                        border: Border.all(color: Theme.of(context).colorScheme.outline, width: 2)),
+                                    alignment: Alignment.center,
+                                    height: height * 0.15,
+                                    child: ListTile(// 메모 및 영업 이력 확인할 수 있는 페이지로 이동
+                                      title: Text(storeInfo.name, style: GoogleFonts.notoSans(),),
+                                      subtitle: storeInfo.id == '폐업'
+                                        ? Text('폐업일자: ${storeInfo.closingDate}\n${storeInfo.description}',style: GoogleFonts.notoSans())
+                                        : Text('등록일자: ${storeInfo.closingDate}\n${storeInfo.description}',style: GoogleFonts.notoSans()),
 
-                                    tileColor: Theme.of(context).colorScheme.onPrimary,
-                                    shape: RoundedRectangleBorder(
-                                        side: BorderSide(color: Theme.of(context).colorScheme.outline, width: 2),
-                                        borderRadius: BorderRadius.all(Radius.circular(20))
-                                    ),
-                                    trailing: GestureDetector(
-                                      child: const Icon(Icons.image_outlined, size: 35),
-                                      onTap: () {
-                                        showDialog(
-                                          context: context,
-                                          builder: (BuildContext context) {
-                                            return Dialog(
-                                              shape: RoundedRectangleBorder(
-                                                side: BorderSide(color: Theme.of(context).colorScheme.outline, width: 3),
-                                                  borderRadius: BorderRadius.all(Radius.circular(20))
-                                              ),
-                                              backgroundColor: Theme.of(context).colorScheme.background,
-                                            child: Padding(
-                                              padding: EdgeInsets.only(top: 25, bottom: 25),
-                                              child: SingleChildScrollView(
-                                                scrollDirection: Axis.vertical,
-                                                child: Column(
-                                                  children: <Widget>[
+                                      tileColor: Theme.of(context).colorScheme.onPrimary,
+                                      shape: RoundedRectangleBorder(
+                                          side: BorderSide(color: Theme.of(context).colorScheme.outline, width: 2),
+                                          borderRadius: BorderRadius.all(Radius.circular(20))
+                                      ),
+                                      trailing: GestureDetector(
+                                        child: const Icon(Icons.image_outlined, size: 35),
+                                        onTap: () {
+                                          showDialog(
+                                            context: context,
+                                            builder: (BuildContext context) {
+                                              return Dialog(
+                                                shape: RoundedRectangleBorder(
+                                                  side: BorderSide(color: Theme.of(context).colorScheme.outline, width: 3),
+                                                    borderRadius: BorderRadius.all(Radius.circular(20))
+                                                ),
+                                                backgroundColor: Theme.of(context).colorScheme.background,
+                                              child: Padding(
+                                                padding: EdgeInsets.only(top: 25, bottom: 25),
+                                                child: SingleChildScrollView(
+                                                  scrollDirection: Axis.vertical,
+                                                  child: Column(
+                                                    children: <Widget>[
 
-                                                    const SizedBox(height: 20),
+                                                      const SizedBox(height: 20),
 
-                                                    Padding(
-                                                      padding: EdgeInsets.all(8.0),
-                                                      child: Text(
-                                                        '사진 등록 이력',
-                                                        style: GoogleFonts.notoSans(fontSize: 30, fontWeight: FontWeight.w500),
-                                                        textAlign: TextAlign.center,
+                                                      Padding(
+                                                        padding: EdgeInsets.all(8.0),
+                                                        child: Text(
+                                                          '사진 등록 이력',
+                                                          style: GoogleFonts.notoSans(fontSize: 30, fontWeight: FontWeight.w500),
+                                                          textAlign: TextAlign.center,
+                                                        ),
                                                       ),
-                                                    ),
 
-                                                    const SizedBox(height: 15),
-                                                    Row(
-                                                      mainAxisAlignment: MainAxisAlignment.center,
-                                                      children: [
-                                                        Container(
-                                                          decoration: BoxDecoration(
-                                                            color: Theme.of(context).colorScheme.background,
-                                                            border: Border.all(color: Theme.of(context).colorScheme.outline, width: 2),
-                                                            borderRadius: BorderRadius.circular(10),
-                                                          ),
-                                                          child: GestureDetector(
-                                                            child: const Padding(
-                                                              padding: EdgeInsets.all(8.0),
-                                                              child: Text(
-                                                                '갤러리에서 등록',
-                                                                style: TextStyle(fontSize: 15),
-                                                              ),
+                                                      const SizedBox(height: 15),
+                                                      Row(
+                                                        mainAxisAlignment: MainAxisAlignment.center,
+                                                        children: [
+                                                          Container(
+                                                            decoration: BoxDecoration(
+                                                              color: Theme.of(context).colorScheme.background,
+                                                              border: Border.all(color: Theme.of(context).colorScheme.outline, width: 2),
+                                                              borderRadius: BorderRadius.circular(10),
                                                             ),
-                                                            onTap: () async {
-                                                              final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-                                                              if (image == null) return;
-                                                              final now = DateTime.now();
-                                                              final formattedDate =
-                                                                  '${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}'
-                                                                  '${now.hour.toString().padLeft(2, '0')}${now.minute.toString().padLeft(2, '0')}';
-                                                              final temporaryPath = join((await getTemporaryDirectory()).path, '${storeInfo.name}_$formattedDate.png');
+                                                            child: GestureDetector(
+                                                              child: const Padding(
+                                                                padding: EdgeInsets.all(8.0),
+                                                                child: Text(
+                                                                  '갤러리에서 등록',
+                                                                  style: TextStyle(fontSize: 15),
+                                                                ),
+                                                              ),
+                                                              onTap: () async {
+                                                                final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+                                                                if (image == null) return;
 
-                                                              Navigator.pop(context);
+                                                                // final now = DateTime.now();
+                                                                final selectedImage = image;
 
+                                                                // final selectedImageMetadata = await readExifFromBytes(selectedImage as List<int>);
+                                                                // if(selectedImageMetadata != null && selectedImageMetadata.containsKey('Image DateTime')){
+                                                                //   captureDate = selectedImageMetadata['Image DateTime'] as String?;
+                                                                //   DateTime dateTime = DateTime.parse(captureDate!);
+                                                                //   formattedCaptureDate = DateFormat('yyyy-MM-dd HH:mm:ss').format(dateTime);
+                                                                // }else{
+                                                                //   captureDate = null;
+                                                                // }
 
-                                                              final selectedImage = image;
-                                                              await selectedImage?.saveTo(temporaryPath);
+                                                                DateTime now = DateTime.now();
 
-                                                              final uploadedImagePath = await Navigator.push(
+                                                                final formattedDate =
+                                                                    '${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}'
+                                                                    '${now.hour.toString().padLeft(2, '0')}${now.minute.toString().padLeft(2, '0')}${now.second.toString().padLeft(2, '0')}';
+
+                                                                final temporaryPath = join((await getTemporaryDirectory()).path, '${storeInfo.name}_$formattedDate.jpeg');
+
+                                                                Navigator.pop(context);
+
+                                                                await selectedImage?.saveTo(temporaryPath);
+
+                                                                final uploadedImagePath = await Navigator.push(
+                                                                    context,
+                                                                    MaterialPageRoute(
+                                                                        builder: (context) => DisplayPictureScreen(imagePath: temporaryPath)
+                                                                    )
+                                                                );
+                                                              },
+                                                            ),
+                                                          ),
+
+                                                          const SizedBox(width: 10),
+
+                                                          Container(
+                                                            decoration: BoxDecoration(
+                                                              color: Theme.of(context).colorScheme.background,
+                                                              border: Border.all(color: Theme.of(context).colorScheme.outline, width: 2),
+                                                              borderRadius: BorderRadius.circular(10),
+                                                            ),
+                                                            child: GestureDetector(
+                                                              child: const Padding(
+                                                                padding: EdgeInsets.all(8.0),
+                                                                child: Text(
+                                                                  '카메라',
+                                                                  style: TextStyle(fontSize: 15),
+                                                                ),
+                                                              ),
+                                                              onTap: () async {
+                                                                XFile? image = await _picker.pickImage(source: ImageSource.camera);
+                                                                if (image == null) return;
+                                                                final now = DateTime.now();
+                                                                final formattedDate =
+                                                                    '${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}'
+                                                                    '${now.hour.toString().padLeft(2, '0')}${now.minute.toString().padLeft(2, '0')}';
+                                                                final temporaryPath = join((await getTemporaryDirectory()).path, '${storeInfo.name}_$formattedDate.png');
+                                                                Navigator.pop(context);
+
+                                                                final selectedImage = image;
+                                                                await selectedImage?.saveTo(temporaryPath);
+
+                                                                final uploadedImagePath = await Navigator.push(
                                                                   context,
                                                                   MaterialPageRoute(
-                                                                      builder: (context) => DisplayPictureScreen(imagePath: temporaryPath)
-                                                                  )
-                                                              );
-                                                            },
-                                                          ),
-                                                        ),
-
-                                                        const SizedBox(width: 10),
-
-                                                        Container(
-                                                          decoration: BoxDecoration(
-                                                            color: Theme.of(context).colorScheme.background,
-                                                            border: Border.all(color: Theme.of(context).colorScheme.outline, width: 2),
-                                                            borderRadius: BorderRadius.circular(10),
-                                                          ),
-                                                          child: GestureDetector(
-                                                            child: const Padding(
-                                                              padding: EdgeInsets.all(8.0),
-                                                              child: Text(
-                                                                '카메라',
-                                                                style: TextStyle(fontSize: 15),
-                                                              ),
-                                                            ),
-                                                            onTap: () async {
-                                                              XFile? image = await _picker.pickImage(source: ImageSource.camera);
-                                                              if (image == null) return;
-                                                              final now = DateTime.now();
-                                                              final formattedDate =
-                                                                  '${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}'
-                                                                  '${now.hour.toString().padLeft(2, '0')}${now.minute.toString().padLeft(2, '0')}';
-                                                              final temporaryPath = join((await getTemporaryDirectory()).path, '${storeInfo.name}_$formattedDate.png');
-                                                              Navigator.pop(context);
-
-                                                              final selectedImage = image;
-                                                              await selectedImage?.saveTo(temporaryPath);
-
-                                                              final uploadedImagePath = await Navigator.push(
-                                                                context,
-                                                                MaterialPageRoute(
-                                                                  builder: (context) => DisplayPictureScreen(imagePath: temporaryPath),
-                                                                ),
-                                                              );
-                                                            },
-                                                          ),
-                                                        )
-                                                      ],
-                                                    ),
-
-                                                    const SizedBox(height: 20),
-
-                                                    FutureBuilder<QuerySnapshot>(
-                                                      future: FirebaseFirestore.instance
-                                                          .collection('images')
-                                                          .where('storeName', isGreaterThanOrEqualTo: '${storeInfo.name}_')
-                                                          .where('storeName', isLessThan: '${storeInfo.name}_\uf8ff')
-                                                          .get(),
-                                                      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                                                        if (snapshot.hasError) {
-                                                          return Image.asset('assets/non.png'); // 에러 발생 시 아무것도 반환하지 않습니다.
-                                                        }
-                                                        if (snapshot.connectionState == ConnectionState.done) {
-                                                          if (snapshot.data == null || snapshot.data!.docs.isEmpty) {
-                                                            return Image.asset('assets/non.png', height: 300,width: 300,); // 데이터 없을 때 아무것도 반환하지 않습니다.
-                                                          }
-                                                          // 그리드뷰로 이미지를 출력합니다.
-                                                          return GridView.count(
-                                                            physics: NeverScrollableScrollPhysics(),
-                                                            shrinkWrap: true,
-                                                            childAspectRatio: 1.0,
-                                                            crossAxisCount: 2,
-                                                            crossAxisSpacing: 2,
-                                                            mainAxisSpacing: 10,
-                                                            children: snapshot.data!.docs.map((doc) {
-                                                              final imageUrl = doc.get('imageUrl') as String?;
-                                                              final uploadDate = doc.get('uploadDate') as String?;
-                                                              final uploadUser = doc.get('uploadUser') as String?;
-                                                              if (imageUrl != null && imageUrl.isNotEmpty) {
-                                                                return GestureDetector(
-                                                                  onTap: () {
-                                                                    showDialog(
-                                                                      context: context,
-                                                                      builder: (BuildContext context) {
-                                                                        return AlertDialog(
-                                                                          shape: RoundedRectangleBorder(
-                                                                              side: BorderSide(color: Theme.of(context).colorScheme.outline, width: 3),
-                                                                              borderRadius: BorderRadius.all(Radius.circular(20))
-                                                                          ),
-                                                                          backgroundColor: Theme.of(context).colorScheme.background,
-                                                                          content: Column(
-                                                                            mainAxisAlignment: MainAxisAlignment.center,
-                                                                            children: [
-                                                                              ClipRRect(
-                                                                                borderRadius: BorderRadius.circular(20.0),
-                                                                                child: Image.network(
-                                                                                  imageUrl,
-                                                                                  height: 550,
-                                                                                  fit: BoxFit.contain
-                                                                                ),
-                                                                              ),
-                                                                              SizedBox(height: 5),
-                                                                              Card(
-                                                                                color: Theme.of(context).colorScheme.onPrimary,
-                                                                                shape: RoundedRectangleBorder(
-                                                                                    side: BorderSide(color: Theme.of(context).colorScheme.outline, width: 2),
-                                                                                    borderRadius: BorderRadius.all(Radius.circular(10))
-                                                                                ),
-                                                                                child: Padding(
-                                                                                  padding: const EdgeInsets.all(10.0),
-                                                                                  child: Center(
-                                                                                    child: Row(
-                                                                                      children: [
-                                                                                        Text('${uploadUser} :', style: TextStyle(fontSize: 20)),
-                                                                                        SizedBox(width: 10),
-                                                                                        Text(' ${uploadDate}', style: TextStyle(fontSize: 20))
-                                                                                      ],
-                                                                                    ),
-                                                                                  ),
-                                                                                ),
-                                                                              ),
-
-                                                                              SizedBox(height: 2),
-
-                                                                              MaterialButton(
-                                                                                  shape: RoundedRectangleBorder(
-                                                                                      side: BorderSide(color: Theme.of(context).colorScheme.outline, width: 2),
-                                                                                      borderRadius: BorderRadius.all(Radius.circular(10))
-                                                                                  ),
-                                                                                  onPressed: () async {
-                                                                                    await deleteImage(imageUrl);
-                                                                                    setState(() {});
-                                                                                  },
-                                                                                child: Text('사진 삭제',style: TextStyle(fontSize: 18)),
-                                                                                color: Theme.of(context).colorScheme.background),
-
-                                                                            ],
-                                                                          ),
-                                                                        );
-                                                                      },
-                                                                    );
-                                                                  },
-                                                                  child: ClipRRect(
-                                                                    borderRadius: BorderRadius.circular(5.0),
-                                                                    child: Container(
-
-                                                                      height: 200,
-                                                                      child: Image.network(
-                                                                        imageUrl,
-                                                                        fit: BoxFit.cover,
-                                                                      ),
-                                                                    ),
+                                                                    builder: (context) => DisplayPictureScreen(imagePath: temporaryPath),
                                                                   ),
                                                                 );
-                                                              } else {
-                                                                return Image.asset('assets/non.png');
-                                                              }
-                                                            }).toList(),
-                                                          );
+                                                              },
+                                                            ),
+                                                          )
+                                                        ],
+                                                      ),
 
-                                                        }
-                                                        return Center(child: CircularProgressIndicator());
-                                                      },
-                                                    ),
-                                                    const SizedBox(height: 30)]
-                                                    ),
-                                              ),
-                                            ),);
-                                          },
-                                        );
-                                      }, // onTap시 화면 중앙에 이미지 출력
+                                                      const SizedBox(height: 20),
+
+                                                      FutureBuilder<QuerySnapshot>(
+                                                        future: FirebaseFirestore.instance
+                                                            .collection('images')
+                                                            .where('storeName', isGreaterThanOrEqualTo: '${storeInfo.name}_')
+                                                            .where('storeName', isLessThan: '${storeInfo.name}_\uf8ff')
+                                                            .get(),
+                                                        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                                                          if (snapshot.hasError) {
+                                                            return Image.asset('assets/non.png'); // 에러 발생 시 아무것도 반환하지 않습니다.
+                                                          }
+                                                          if (snapshot.connectionState == ConnectionState.done) {
+                                                            if (snapshot.data == null || snapshot.data!.docs.isEmpty) {
+                                                              return Image.asset('assets/non.png', height: 300,width: 300,); // 데이터 없을 때 아무것도 반환하지 않습니다.
+                                                            }
+                                                            // 그리드뷰로 이미지를 출력합니다.
+                                                            return GridView.count(
+                                                              physics: NeverScrollableScrollPhysics(),
+                                                              shrinkWrap: true,
+                                                              childAspectRatio: 1.0,
+                                                              crossAxisCount: 2,
+                                                              crossAxisSpacing: 2,
+                                                              mainAxisSpacing: 10,
+                                                              children: snapshot.data!.docs.map((doc) {
+                                                                final imageUrl = doc.get('imageUrl') as String?;
+                                                                final uploadDate = doc.get('uploadDate') as String?;
+                                                                final uploadUser = doc.get('uploadUser') as String?;
+                                                                if (imageUrl != null && imageUrl.isNotEmpty) {
+                                                                  return GestureDetector(
+                                                                    onTap: () {
+                                                                      Navigator.push(
+                                                                          context,
+                                                                          MaterialPageRoute(
+                                                                              builder: (context) =>
+                                                                                  imageViewer(imageUrl: imageUrl, uploadDate: uploadDate, uploadUser: uploadUser)
+                                                                          )
+                                                                      );
+                                                                    },
+                                                                    child: ClipRRect(
+                                                                      borderRadius: BorderRadius.circular(5.0),
+                                                                      child: Container(
+
+                                                                        height: 200,
+                                                                        child: Image.network(
+                                                                          imageUrl,
+                                                                          fit: BoxFit.cover,
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                  );
+                                                                } else {
+                                                                  return Image.asset('assets/non.png');
+                                                                }
+                                                              }).toList(),
+                                                            );
+
+                                                          }
+                                                          return Center(child: CircularProgressIndicator());
+                                                        },
+                                                      ),
+                                                      const SizedBox(height: 30)]
+                                                      ),
+                                                ),
+                                              ),);
+                                            },
+                                          );
+                                        }, // onTap시 화면 중앙에 이미지 출력
+                                      ),
+                                      // 다른 정보를 표시하려면 여기에 추가
                                     ),
-                                    // 다른 정보를 표시하려면 여기에 추가
                                   ),
                                 );
                               }

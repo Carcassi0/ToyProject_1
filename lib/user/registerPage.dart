@@ -61,7 +61,7 @@ class _RegisterPageState extends State<RegisterPage> {
             _firstnameController.text.trim(),
             _lastnameController.text.trim(),
             _emailController.text.trim(),
-            _storecodeController.text.trim()
+            _storecodeController.text.trim().toString()
         );
         Navigator.pop(context);
       } else {
@@ -86,7 +86,7 @@ class _RegisterPageState extends State<RegisterPage> {
       'first name': firstName ,
       'last name': lastName,
       'email': email,
-      'store code': int.tryParse(storecode)
+      'store code': storecode
     });
   }
 

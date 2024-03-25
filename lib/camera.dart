@@ -1,6 +1,7 @@
 import 'package:camera/camera.dart';
 import 'package:doitflutter/map/mapScreen.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
@@ -9,6 +10,8 @@ import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_exif_rotation/flutter_exif_rotation.dart';
+import 'package:exif/exif.dart';
 
 
 
@@ -17,37 +20,48 @@ import 'package:google_fonts/google_fonts.dart';
 class DisplayPictureScreen extends StatelessWidget {
   final String imagePath;
 
-  const DisplayPictureScreen({Key? key, required this.imagePath}) : super(key: key);
+
+  const DisplayPictureScreen({Key? key, required this.imagePath})
+      : super(key: key);
 
   @override
-
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: Theme
+          .of(context)
+          .colorScheme
+          .background,
       appBar: AppBar(
-        title: Text('업로드', style: GoogleFonts.notoSans(fontWeight: FontWeight.w400)),
+        title: Text(
+            '업로드', style: GoogleFonts.notoSans(fontWeight: FontWeight.w400)),
         leading: IconButton(
           icon: Icon(Icons.close_outlined),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
-        backgroundColor: Theme.of(context).colorScheme.background,
+        backgroundColor: Theme
+            .of(context)
+            .colorScheme
+            .background,
         actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.check_outlined),
             onPressed: () async {
-
               // 이미지 업로드 진행 출력
               final overlay = Overlay.of(context);
               final indicator = OverlayEntry(
-                builder: (context) => Center(child: CircularProgressIndicator()),
+                builder: (context) =>
+                    Center(child: CircularProgressIndicator()),
               );
               overlay.insert(indicator);
 
+
+              final captureDate = await getCapturedDate(imagePath); // null 발생 => exif 데이터 내에 촬영날짜 데이터가 없음.
+
               final imageUrl = await uploadImageToFirebaseStorage(imagePath);
 
-              saveImageUrlToFirestore(imageUrl, imagePath);
+              saveImageUrlToFirestore(imageUrl, imagePath, captureDate! as String);
 
               indicator.remove();
 
@@ -55,13 +69,16 @@ class DisplayPictureScreen extends StatelessWidget {
 
               showDialog(
                 context: context,
-                builder: (builder) => AlertDialog(
-                  title: Text('알림', style: GoogleFonts.notoSans(fontSize: 16),),
-                  content: Text('사진이 정상적으로 업로드되었습니다.',style: GoogleFonts.notoSans(fontSize: 13)),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(20))
-                  ),
-                ),
+                builder: (builder) =>
+                    AlertDialog(
+                      title: Text(
+                        '알림', style: GoogleFonts.notoSans(fontSize: 16),),
+                      content: Text('사진이 정상적으로 업로드되었습니다.',
+                          style: GoogleFonts.notoSans(fontSize: 13)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(20))
+                      ),
+                    ),
               );
             },
           ),
@@ -80,19 +97,18 @@ class DisplayPictureScreen extends StatelessWidget {
   }
 
 
-
-
   Future<String> uploadImageToFirebaseStorage(String imagePath) async {
     // 이미지를 압축합니다.
     final compressedImage = await FlutterImageCompress.compressAndGetFile(
       imagePath,
-      imagePath.replaceFirst('.png', '_compressed.jpg'),  // 파일 이름을 .jpg로 변경합니다.
-      quality: 20,  // 품질을 20%로 설정합니다.
+      imagePath.replaceFirst('.png', '_compressed.jpg'), // 파일 이름을 .jpg로 변경합니다.
+      quality: 20, // 품질을 20%로 설정합니다.
     );
 
     // Firebase Storage에 압축된 이미지를 업로드합니다.
-    final fileName = p.basename(compressedImage!.path);  // 파일 이름을 가져옵니다.
-    final ref = firebase_storage.FirebaseStorage.instance.ref().child('images/$fileName');    // 파일 이름을 .jpg로 변경합니다.
+    final fileName = p.basename(compressedImage!.path); // 파일 이름을 가져옵니다.
+    final ref = firebase_storage.FirebaseStorage.instance.ref().child(
+        'images/$fileName'); // 파일 이름을 .jpg로 변경합니다.
     final uploadTask = ref.putFile(File(compressedImage!.path));
     final snapshot = await uploadTask;
     final downloadUrl = await snapshot.ref.getDownloadURL();
@@ -100,135 +116,92 @@ class DisplayPictureScreen extends StatelessWidget {
     return downloadUrl;
   }
 
-  void saveImageUrlToFirestore(String imageUrl, String imagePath) {
+  Future<void> saveImageUrlToFirestore(String imageUrl, String imagePath,
+      String captureDate) async {
     final fileName = p.withoutExtension(p.basename(imagePath));
     final now = DateTime.now();
+
     // Firebase Firestore에 이미지 URL을 저장합니다.
     FirebaseFirestore.instance.collection('images').add({
-      'storeName' : fileName,
+      'storeName': fileName,
       'imageUrl': imageUrl,
-      'uploadDate': '${now.month.toString().padLeft(2, '0')}월 ${now.day.toString().padLeft(2, '0')}일 ${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}',
+      'uploadDate': captureDate.toString(),
+      // '${now.month.toString().padLeft(2, '0')}월 ${now.day.toString().padLeft(2, '0')}일 ${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}',
       'uploadUser': '위의종'
       // 다른 필드에 대한 추가 정보를 저장할 수 있습니다.
     });
   }
-}
 
+  Future<DateTime?> getCapturedDate(String temporaryPath) async {
+    // 이미지 파일 읽기
+    final imageFile = File(temporaryPath);
+    final exifData = await readExifFromBytes(imageFile.readAsBytesSync());
 
-class CameraPreviewScreen extends StatefulWidget {
-  final CameraDescription camera;
+    // EXIF 데이터 확인
+    exifData.forEach((key, value) {
+      print('$key: $value');
+    });
 
-  const CameraPreviewScreen({
-    Key? key,
-    required this.camera,
-  }) : super(key: key);
-
-  @override
-  _CameraPreviewScreenState createState() => _CameraPreviewScreenState();
-}
-
-class _CameraPreviewScreenState extends State<CameraPreviewScreen> {
-  late CameraController _controller;
-  late Future<void> _initializeControllerFuture;
-
-  @override
-  void initState() {
-    super.initState();
-    _initializeCamera();
-  }
-
-  Future<void> _initializeCamera() async {
-    _controller = CameraController(
-      widget.camera,
-      ResolutionPreset.medium,
-    );
-
-    _initializeControllerFuture = _controller.initialize();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('카메라 미리보기'),
-      ),
-      body: FutureBuilder<void>(
-        future: _initializeControllerFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            return CameraPreview(_controller);
-          } else {
-            return const Center(child: CircularProgressIndicator());
-          }
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          try {
-            await _initializeControllerFuture;
-
-            final path = p.join(
-              (await getTemporaryDirectory()).path,
-              '${DateTime.now()}.png',
-            );
-
-            final image = await _controller.takePicture();
-
-            // 이미지를 path에 저장.
-            await image.saveTo(path);
-
-            // 이미지 업로드 화면으로 이동하여 이미지 업로드 처리
-            final uploadedImagePath = await Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => DisplayPictureScreen(imagePath: path),
-              ),
-            );
-
-            // 이미지가 업로드된 경로가 반환되면 Firebase Firestore에 저장.
-            if (uploadedImagePath != null) {
-              await _uploadImageToFirebaseStorage(uploadedImagePath);
-              AlertDialog(
-                title: Text('이미지가 업로드 되었습니다'),
-                content: GestureDetector(
-                  child: Text('닫기'),
-                  onTap: (){Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => const MyMapScreen()));
-                  }
-                ),
-              );
-            }
-          } catch (e) {
-            print(e);
-          }
-        },
-        child: Icon(Icons.camera),
-      ),
-    );
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-
-  }
-  // 이미지를 Firebase Storage에 업로드하고 Firestore에 이미지 URL을 저장합니다.
-  Future<void> _uploadImageToFirebaseStorage(String imagePath) async {
-    try {
-      final ref = firebase_storage.FirebaseStorage.instance.ref().child('images/${DateTime.now()}.png');
-      final uploadTask = ref.putFile(File(imagePath));
-      await uploadTask.whenComplete(() => null);
-      final downloadUrl = await ref.getDownloadURL();
-
-      // Firestore에 이미지 URL을 저장합니다.
-      await FirebaseFirestore.instance.collection('images').add({
-        'imageUrl': downloadUrl,
-      });
-
-    } catch (e) {
-      print('Error uploading image to Firebase: $e');
+    // EXIF 데이터에서 촬영 날짜 추출
+    final dateTime = exifData['Image DateTime'];
+    if (dateTime != null) {
+      // 사용자 정의 파서를 사용하여 날짜 문자열 파싱
+      final parsedDateTime = parseCustomDateTime(dateTime.toString());
+      if (parsedDateTime != null) {
+        return parsedDateTime;
+      } else {
+        // 오류 처리
+        print('Failed to parse date time.');
+        return null;
+      }
+    } else {
+      return null;
     }
   }
+
+// 사용자 정의 파서
+  DateTime? parseCustomDateTime(String dateTimeString) {
+    try {
+      final parts = dateTimeString.split(' ');
+      final dateParts = parts[0].split(':');
+      final timeParts = parts[1].split(':');
+
+      final year = int.parse(dateParts[0]);
+      final month = int.parse(dateParts[1]);
+      final day = int.parse(dateParts[2]);
+      final hour = int.parse(timeParts[0]);
+      final minute = int.parse(timeParts[1]);
+      final second = int.parse(timeParts[2]);
+
+      return DateTime(year, month, day, hour, minute, second);
+    } catch (e) {
+      print('Error parsing date time: $e');
+      return null;
+    }
+  }
+
+
+// Future<DateTime?> getCapturedDate(String temporaryPath) async {
+  //   // 이미지 파일 읽기
+  //   final imageFile = File(temporaryPath);
+  //   final exifData = await readExifFromBytes(imageFile.readAsBytesSync());
+  //
+  //   exifData.forEach((key, value) {
+  //     print('$key: $value');
+  //   });
+  //
+  //   // EXIF 데이터에서 촬영 날짜 추출
+  //   final dateTime = exifData['Image DateTime'];
+  //   if (dateTime != null) {
+  //     return DateTime.parse(dateTime.toString());
+  //   } else {
+  //     return null;
+  //   }
+  // }
+
 }
+
+
+
+
 
