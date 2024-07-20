@@ -1,3 +1,5 @@
+import 'dart:core';
+
 import 'package:camera/camera.dart';
 import 'package:doitflutter/map/mapScreen.dart';
 import 'package:flutter/material.dart';
