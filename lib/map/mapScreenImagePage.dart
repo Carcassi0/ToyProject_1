@@ -78,7 +78,7 @@ class _ImageUploadPageState extends State<ImageUploadPage> {
 
     Navigator.pushReplacement(
       context as BuildContext,
-      MaterialPageRoute(builder: (context) => DisplayPictureScreen(imagePath: temporaryPath)),
+      MaterialPageRoute(builder: (context) => DisplayPictureScreen(imagePath: temporaryPath, selectedImage: selectedImage)),
     );
   }
 

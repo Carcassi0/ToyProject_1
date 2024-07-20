@@ -19,9 +19,10 @@ import 'package:exif/exif.dart';
 
 class DisplayPictureScreen extends StatelessWidget {
   final String imagePath;
+  final XFile selectedImage;
 
 
-  const DisplayPictureScreen({Key? key, required this.imagePath})
+  const DisplayPictureScreen({Key? key, required this.imagePath, required this.selectedImage})
       : super(key: key);
 
   @override
@@ -56,12 +57,16 @@ class DisplayPictureScreen extends StatelessWidget {
               );
               overlay.insert(indicator);
 
+              // getExifFromFile();
 
-              final captureDate = await getCapturedDate(imagePath); // null 발생 => exif 데이터 내에 촬영날짜 데이터가 없음.
+              // final captureDate = await getCapturedDate(imagePath); // 에러 발생 => exif 데이터 내에 촬영날짜 데이터가 없음.
+
+
+              // 이미지를 var 형으로 받아와야 하는데 현재 이미지의 경로를 저장하고 있음.
 
               final imageUrl = await uploadImageToFirebaseStorage(imagePath);
 
-              saveImageUrlToFirestore(imageUrl, imagePath, captureDate! as String);
+              saveImageUrlToFirestore(imageUrl, imagePath, getExifFromFile());
 
               indicator.remove();
 
@@ -117,68 +122,110 @@ class DisplayPictureScreen extends StatelessWidget {
   }
 
   Future<void> saveImageUrlToFirestore(String imageUrl, String imagePath,
-      String captureDate) async {
+      Future<String> captureDate) async {
     final fileName = p.withoutExtension(p.basename(imagePath));
-    final now = DateTime.now();
+    final String date = await captureDate;
 
     // Firebase Firestore에 이미지 URL을 저장합니다.
     FirebaseFirestore.instance.collection('images').add({
       'storeName': fileName,
       'imageUrl': imageUrl,
-      'uploadDate': captureDate.toString(),
-      // '${now.month.toString().padLeft(2, '0')}월 ${now.day.toString().padLeft(2, '0')}일 ${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}',
+      'uploadDate': date,
       'uploadUser': '위의종'
-      // 다른 필드에 대한 추가 정보를 저장할 수 있습니다.
     });
   }
 
-  Future<DateTime?> getCapturedDate(String temporaryPath) async {
-    // 이미지 파일 읽기
-    final imageFile = File(temporaryPath);
-    final exifData = await readExifFromBytes(imageFile.readAsBytesSync());
-
-    // EXIF 데이터 확인
-    exifData.forEach((key, value) {
-      print('$key: $value');
+  Future<String> getExifFromFile() async{
+    if(selectedImage == null){
+      print("exif is empty");
+      return "";
+    }
+    var bytes = await selectedImage!.readAsBytes();
+    var tags = await readExifFromBytes(bytes);
+    var sb = StringBuffer();
+    tags.forEach((k,v){
+      print("$k: $v\n");
+      sb.write("$k: $v\n");
     });
 
-    // EXIF 데이터에서 촬영 날짜 추출
-    final dateTime = exifData['Image DateTime'];
-    if (dateTime != null) {
-      // 사용자 정의 파서를 사용하여 날짜 문자열 파싱
-      final parsedDateTime = parseCustomDateTime(dateTime.toString());
-      if (parsedDateTime != null) {
-        return parsedDateTime;
-      } else {
-        // 오류 처리
-        print('Failed to parse date time.');
-        return null;
-      }
-    } else {
-      return null;
+    if (tags.containsKey('EXIF DateTimeOriginal')) {
+      String dateTimeOriginal = tags['EXIF DateTimeOriginal']?.toString() ?? '';
+      String formattedDateTime = _formatDateTime(dateTimeOriginal);
+      print("Formatted DateTimeOriginal: $formattedDateTime");
+      sb.write("Formatted DateTimeOriginal: $formattedDateTime\n");
+      return formattedDateTime;
     }
+    return sb.toString();
+  }
+
+
+  // Future<DateTime?> getCapturedDate(String temporaryPath) async {
+  //   // 이미지 파일 읽기
+  //   final imageFile = File(temporaryPath);
+  //   final exifData = await readExifFromBytes(imageFile.readAsBytesSync());
+  //
+  //   // EXIF 데이터 체크
+  //   exifData.forEach((key, value) {
+  //     print('$key: $value');
+  //   });
+  //
+  //   // EXIF 데이터에서 촬영 날짜 추출
+  //   final dateTime = exifData['DateTimeOriginal'];
+  //   if (dateTime != null) {
+  //     // 사용자 정의 파서를 사용하여 날짜 문자열 파싱
+  //     final parsedDateTime = parseCustomDateTime(dateTime.toString());
+  //     if (parsedDateTime != null) {
+  //       return parsedDateTime;
+  //     } else {
+  //       // 오류 처리
+  //       print('Failed to parse date time.');
+  //       return null;
+  //     }
+  //   } else {
+  //     return null;
+  //   }
+  // }
+
+  String _formatDateTime(String dateTime) {
+    // EXIF 날짜 형식: YYYY:MM:DD HH:MM:SS
+    List<String> dateTimeParts = dateTime.split(' ');
+    String datePart = dateTimeParts[0];
+    String timePart = dateTimeParts[1];
+
+    // 날짜 부분을 ':'로 분할
+    List<String> dateComponents = datePart.split(':');
+    String year = dateComponents[0].substring(2);  // 두 자리 연도
+    String month = dateComponents[1];
+    String day = dateComponents[2];
+
+    // 시간 부분을 ':'로 분할
+    List<String> timeComponents = timePart.split(':');
+    String hour = timeComponents[0];
+    String minute = timeComponents[1];
+
+    return "$year.$month.$day $hour:$minute";
   }
 
 // 사용자 정의 파서
-  DateTime? parseCustomDateTime(String dateTimeString) {
-    try {
-      final parts = dateTimeString.split(' ');
-      final dateParts = parts[0].split(':');
-      final timeParts = parts[1].split(':');
-
-      final year = int.parse(dateParts[0]);
-      final month = int.parse(dateParts[1]);
-      final day = int.parse(dateParts[2]);
-      final hour = int.parse(timeParts[0]);
-      final minute = int.parse(timeParts[1]);
-      final second = int.parse(timeParts[2]);
-
-      return DateTime(year, month, day, hour, minute, second);
-    } catch (e) {
-      print('Error parsing date time: $e');
-      return null;
-    }
-  }
+//   DateTime? parseCustomDateTime(String dateTimeString) {
+//     try {
+//       final parts = dateTimeString.split(' ');
+//       final dateParts = parts[0].split(':');
+//       final timeParts = parts[1].split(':');
+//
+//       final year = int.parse(dateParts[0]);
+//       final month = int.parse(dateParts[1]);
+//       final day = int.parse(dateParts[2]);
+//       final hour = int.parse(timeParts[0]);
+//       final minute = int.parse(timeParts[1]);
+//       final second = int.parse(timeParts[2]);
+//
+//       return DateTime(year, month, day, hour, minute, second);
+//     } catch (e) {
+//       print('Error parsing date time: $e');
+//       return null;
+//     }
+//   }
 
 
 // Future<DateTime?> getCapturedDate(String temporaryPath) async {

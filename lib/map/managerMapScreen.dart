@@ -265,7 +265,7 @@ class _managerMapScreenState extends State<managerMapScreen> {
                                                               final uploadedImagePath = await Navigator.push(
                                                                   context,
                                                                   MaterialPageRoute(
-                                                                      builder: (context) => DisplayPictureScreen(imagePath: temporaryPath)
+                                                                      builder: (context) => DisplayPictureScreen(imagePath: temporaryPath, selectedImage: selectedImage)
                                                                   )
                                                               );
                                                             },
@@ -304,7 +304,7 @@ class _managerMapScreenState extends State<managerMapScreen> {
                                                               final uploadedImagePath = await Navigator.push(
                                                                 context,
                                                                 MaterialPageRoute(
-                                                                  builder: (context) => DisplayPictureScreen(imagePath: temporaryPath),
+                                                                  builder: (context) => DisplayPictureScreen(imagePath: temporaryPath, selectedImage: selectedImage),
                                                                 ),
                                                               );
                                                             },
