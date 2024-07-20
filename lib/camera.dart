@@ -1,5 +1,4 @@
 import 'dart:core';
-
 import 'package:camera/camera.dart';
 import 'package:doitflutter/map/mapScreen.dart';
 import 'package:flutter/material.dart';
@@ -202,7 +201,7 @@ class DisplayPictureScreen extends StatelessWidget {
 
     // 시간 부분을 ':'로 분할
     List<String> timeComponents = timePart.split(':');
-    String hour = timeComponents[0];가
+    String hour = timeComponents[0];
     String minute = timeComponents[1];
 
     return "$year.$month.$day $hour:$minute";
