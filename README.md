@@ -1,5 +1,3 @@
-# doitflutter
-
-A new Flutter project.
+Toy project.
 
 
